@@ -40,7 +40,10 @@ try:
 except ImportError:
   pass
 sys.path.insert(0, os.path.dirname('/home/yaplab/Programming/python3'))
-import medImgProc
+try:
+    import medImgProc
+except:
+    pass
 import BsplineFourier
 import multiprocessing
 import time
