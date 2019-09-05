@@ -6,6 +6,9 @@ History:
     Date    Programmer SAR# - Description
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         31JAN2018           - Created
+Author: w.x.chan@gmail.com         31JAN2019           - v1.1.0
+								-bfSolver version 2.0.0
+								-BsplineFourier version 2.0.0
 
 Requirements:
     autoD
@@ -19,7 +22,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-print('bfmotionsolver version 1.0.0')
+print('motionSegmentation version 1.1.0')
 
 import os
 import sys
