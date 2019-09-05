@@ -4,7 +4,7 @@ setup(
   packages = ['motionSegmentation'],   # Chose the same as "name"
   version = '1.1.0',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
-  description = 'Medical Image Processing module for viewing and editing.',   # Give a short description about your library
+  description = 'Explicit motion tracking.',   # Give a short description about your library
   author = 'Wei Xuan Chan',                   # Type in your name
   author_email = 'w.x.chan1986@gmail.com',      # Type in your E-Mail
   url = 'https://github.com/WeiXuanChan/motionSegmentation',   # Provide either the link to your github or to your website
