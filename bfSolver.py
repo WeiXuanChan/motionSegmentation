@@ -39,7 +39,6 @@ try:
   import pickle
 except ImportError:
   pass
-sys.path.insert(0, os.path.dirname('/home/yaplab/Programming/python3'))
 try:
     import medImgProc
 except:
