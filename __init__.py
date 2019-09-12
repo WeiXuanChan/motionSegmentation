@@ -7,8 +7,11 @@ History:
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         31JAN2018           - Created
 Author: w.x.chan@gmail.com         31JAN2019           - v1.2.0
-								                                          -bfSolver version 1.0.0
-								                                          -BsplineFourier version 1.2.0
+						-bfSolver version 1.0.0
+						-BsplineFourier version 1.2.0
+Author: w.x.chan@gmail.com         12SEP2019           - v2.0.0
+						-bfSolver version 2.0.0
+						-BsplineFourier version 2.0.0
 
 
 Requirements:
@@ -23,7 +26,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-print('motionSegmentation version 1.2.0')
+print('motionSegmentation version 2.0.0')
 
 import os
 import sys
