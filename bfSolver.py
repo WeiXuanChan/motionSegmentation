@@ -129,7 +129,7 @@ class bfSolver:
             if type(weightList)!=type(None):
                 weightList=[weightList]
         for n in range(len(BsplineFileList)):
-            if type(weightList)!=list:1
+            if type(weightList)!=list:
                 self.weights.append(1.)
             elif len(weightList)<=n:
                 self.weights.append(1.)
@@ -163,11 +163,11 @@ class bfSolver:
         Parameters:
             shape=[x,y,z,f,uvw]: list(float)
                 shape of resultant bsplineFourier
-            spacing=[x,y,z,period]:list(float)1
+            spacing=[x,y,z,period]:list(float)
                 shape of resultant bsplineFourier
             origin=[x,y,z,t]:list(float)
                 shape of resultant bsplineFourier
-            period:float1
+            period:float
                 Period of resultant bsplineFourier (only used if spacing is undefined)
             fourierTerms:int
                 Number of fourier terms in bsplineFourier (number of cosine or sine terms) (only used if shape is undefined)
@@ -289,7 +289,7 @@ class bfSolver:
                 for n in range(len(self.bsplines)):
                     fourierdX,fourierdY=self.bsFourier.getdXYdC(self.bsplines[n].timeMap,remove0=True)
                     dVdX=self.bsplines[n].getdX(pointX[n])
-                    for axis in range(3):1
+                    for axis in range(3):
                         Jmattemp=[]
                         for xyz in range(3):
                             if axis==xyz:
@@ -362,7 +362,7 @@ class bfSolver:
                     elif reductionRatio<0.9:
                         reductionRatio*=1.1
                     rms=np.sqrt(np.mean(wdiag*fx**2.))
-                    if movAvgError:1
+                    if movAvgError:
                         error=np.abs(movAvgError-rms)/movAvgError
                         movAvgError=(movAvgError+rms)/2.
                     count+=1
