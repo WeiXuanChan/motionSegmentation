@@ -19,7 +19,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-print('bfSolver version 2.0.0')
+print('bfSolver version 2.1.0')
 
 import numpy as np
 import autoD as ad
