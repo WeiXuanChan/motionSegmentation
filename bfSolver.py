@@ -8,7 +8,7 @@ History:
   Author: w.x.chan@gmail.com         25OCT2018           - Created
   Author: w.x.chan@gmail.com         06Aug2019           - v2.0.0
                                                              -enable 2D for BC-point by point solver only
-  Author: w.x.chan@gmail.com         06Aug2019           - v2.1.0
+  Author: w.x.chan@gmail.com         12Sep2019           - v2.1.0
                                                              -save Sampling results at the end of solving
 Requirements:
     BsplineFourier
