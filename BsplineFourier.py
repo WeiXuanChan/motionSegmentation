@@ -24,7 +24,8 @@ Known Bug:
     None
 All rights reserved.
 '''
-print('BsplineFourier version 2.0.0')
+_version='2.0.0'
+print('BsplineFourier version',_version)
 
 import numpy as np
 import autoD as ad
