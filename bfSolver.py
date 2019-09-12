@@ -8,6 +8,8 @@ History:
   Author: w.x.chan@gmail.com         25OCT2018           - Created
   Author: w.x.chan@gmail.com         06Aug2019           - v2.0.0
                                                              -enable 2D for BC-point by point solver only
+  Author: w.x.chan@gmail.com         06Aug2019           - v2.1.0
+                                                             -save Sampling results at the end of solving
 Requirements:
     BsplineFourier
     numpy
@@ -484,6 +486,8 @@ class bfSolver:
                 print('Solved for point',m+1,'/',len(self.points),self.points[m],',rms start=',rmsStart,'rms end=',rms,',max rms=',max(rmsList))
                 if type(tempSave)!=type(None):
                     self.writeSamplingResults(tempSave)
+        if type(tempSave)!=type(None):
+            self.writeSamplingResults(tempSave)
         rmsList=np.array(rmsList)
         return (self.pointsCoef,rmsList)
     def addEquation(self,equation_AD,eqnToPts=None,weight=1.):
