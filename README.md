@@ -1,2 +1,2 @@
 # motionSegmentation
-explicit spatio-temporal regularization of motion tracking
+Explicit spatio-temporal regularization of motion tracking
