@@ -7,6 +7,8 @@ History:
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         31JAN2018           - Created
 Author: w.x.chan@gmail.com         31JAN2019           - v1.2.0
+								                                          -bfSolver version 1.0.0
+								                                          -BsplineFourier version 1.2.0
 
 
 Requirements:
