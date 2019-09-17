@@ -31,7 +31,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.2.1'
+_version='2.2.2'
 print('motionSegmentation version',_version)
 
 import os
