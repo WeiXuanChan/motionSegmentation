@@ -1348,7 +1348,7 @@ class BsplineFourier(Bspline):
             else:
                 imgData=imgData[:,:,zList]
         
-        imgDimlen={'x':spacing[0],'y':spacing[1],'f':1,,'u':1}
+        imgDimlen={'x':spacing[0],'y':spacing[1],'f':1,'u':1}
         if self.coef.shape[-1]>2:
             imgDimlen['z']=spacing[2]
         self.getRefCoef(coordMat)
