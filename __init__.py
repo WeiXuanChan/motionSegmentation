@@ -15,7 +15,7 @@ Author: w.x.chan@gmail.com         12SEP2019           - v2.0.0
 Author: w.x.chan@gmail.com         12SEP2019           - v2.1.0
 						-bfSolver version 2.1.0
 						-BsplineFourier version 2.0.0
-Author: w.x.chan@gmail.com         12SEP2019           - v2.2.0
+Author: w.x.chan@gmail.com         12SEP2019           - v2.2.1
 						-bfSolver version 2.1.0
 						-BsplineFourier version 2.2.0
 
@@ -31,7 +31,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.1.0'
+_version='2.2.1'
 print('motionSegmentation version',_version)
 
 import os
