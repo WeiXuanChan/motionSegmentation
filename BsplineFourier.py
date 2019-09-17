@@ -1351,7 +1351,7 @@ class BsplineFourier(Bspline):
         imgDimlen={'x':spacing[0],'y':spacing[1],'f':1,'u':1}
         if self.coef.shape[-1]>2:
             imgDimlen['z']=spacing[2]
-        self.getRefCoef(coordMat)
+
         for xn in range(len(xList)):
             print('    {0:.3f}% completed...'.format(float(xn)/len(xList)*100.))
             for yn in range(len(yList)):
