@@ -13,6 +13,8 @@ History:
                                                              -add EulerTransform
   Author: w.x.chan@gmail.com         06Aug2019           - v2.0.0
                                                              -enable 2D
+  Author: w.x.chan@gmail.com         16Sep2019           - v2.2.0
+                                                             -added function fcoefImage
 Requirements:
     autoD
     numpy
@@ -1296,9 +1298,9 @@ class BsplineFourier(Bspline):
 
     def fcoefImage(self,imageSize=None,spacing=None,coefFourierWeight=None,xList=None,yList=None,zList=None,scaleFromGrid=None):
         ''' 
-        Create an image based on the amplitude of fourier coefficients
+        Create an image based sampling of fourier coefficients
         Parameters:
-            imageSize=[x,y,z]:list,np.ndarray
+            imageSize=[x,y,z,f,uvw]:list,np.ndarray
                 image pixel size
             coefFourierWeight=[fourierterm1,fourierterm2]:list,np.ndarray
                 weighs the courier terms of different frequencies cosine and sine are considered as a single term
