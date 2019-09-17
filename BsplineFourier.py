@@ -1300,7 +1300,7 @@ class BsplineFourier(Bspline):
         ''' 
         Create an image based sampling of fourier coefficients
         Parameters:
-            imageSize=[x,y,z,f,uvw]:list,np.ndarray
+            imageSize=[x,y,z]:list,np.ndarray
                 image pixel size
             coefFourierWeight=[fourierterm1,fourierterm2]:list,np.ndarray
                 weighs the courier terms of different frequencies cosine and sine are considered as a single term
