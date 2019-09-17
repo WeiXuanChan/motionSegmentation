@@ -1294,7 +1294,72 @@ class BsplineFourier(Bspline):
                     imgData[xn,yn]=(fvalue*coefFourierWeight).sum()
         return (imgData,imgDimlen)
 
-
+    def fcoefImage(self,imageSize=None,spacing=None,coefFourierWeight=None,xList=None,yList=None,zList=None,scaleFromGrid=None):
+        ''' 
+        Create an image based on the amplitude of fourier coefficients
+        Parameters:
+            imageSize=[x,y,z]:list,np.ndarray
+                image pixel size
+            coefFourierWeight=[fourierterm1,fourierterm2]:list,np.ndarray
+                weighs the courier terms of different frequencies cosine and sine are considered as a single term
+            xList: range
+                fills x pixels
+            yList: range
+                fills y pixels
+            zList: range
+                fills z pixels
+            scaleFromGrid: float of np.ndarray(3)
+                scale image size from bspline grid if image size is not given
+        Return:
+            imgData:np.ndarray
+                image intensity data
+            imgDimlen: dict
+                conversion of image pixel to real coordinates
+        Note: origin is conserved
+        '''
+        if type(scaleFromGrid)==type(None):
+            scaleFromGrid=10.
+        if type(imageSize)==type(None):
+            imageSize=np.array(self.coef.shape[:self.coef.shape[-1]])*scaleFromGrid
+            spacing=np.array(self.spacing[:self.coef.shape[-1]])/scaleFromGrid
+        elif type(spacing)==type(None):
+            spacing=np.array(self.spacing[:self.coef.shape[-1]]*(np.array(self.coef.shape[:self.coef.shape[-1]]-1)/(imageSize-1)))
+        imageSize=np.array(imageSize).astype(int)
+        if type(coefFourierWeight)==type(None):
+            coefFourierWeight=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
+            coefFourierWeight[0]=1.
+        maxomega=np.argmax(coefFourierWeight)
+        
+        imageSize=np.array([*imageSize,*self.coef.shape[self.coef.shape[-1]:]])
+        imgData=np.zeros(imageSize)
+        if type(xList)==type(None):
+            xList=range(imageSize[0])
+        else:
+            imgData=imgData[xList]
+        if type(yList)==type(None):
+            yList=range(imageSize[1])
+        else:
+            imgData=imgData[:,yList]
+        if self.coef.shape[-1]>2:
+            if type(zList)==type(None):
+                zList=range(imageSize[2])
+            else:
+                imgData=imgData[:,:,zList]
+        
+        imgDimlen={'x':spacing[0],'y':spacing[1],'f':1,,'u':1}
+        if self.coef.shape[-1]>2:
+            imgDimlen['z']=spacing[2]
+        self.getRefCoef(coordMat)
+        for xn in range(len(xList)):
+            print('    {0:.3f}% completed...'.format(float(xn)/len(xList)*100.))
+            for yn in range(len(yList)):
+                if self.coef.shape[-1]>2:
+                    for zn in range(len(zList)):
+                        imgData[xn,yn,zn]=self.getRefCoef([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y'],zList[zn]*imgDimlen['z']])
+                else:
+                    imgData[xn,yn]=self.getRefCoef([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y']])
+        return (imgData,imgDimlen)
+      
 class Affine:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
