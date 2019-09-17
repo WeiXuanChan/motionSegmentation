@@ -15,6 +15,9 @@ Author: w.x.chan@gmail.com         12SEP2019           - v2.0.0
 Author: w.x.chan@gmail.com         12SEP2019           - v2.1.0
 						-bfSolver version 2.1.0
 						-BsplineFourier version 2.0.0
+Author: w.x.chan@gmail.com         12SEP2019           - v2.2.0
+						-bfSolver version 2.1.0
+						-BsplineFourier version 2.2.0
 
 Requirements:
     autoD
