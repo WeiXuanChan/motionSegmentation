@@ -20,7 +20,7 @@ Known Bug:
 All rights reserved.
 '''
 _version='2.1.0'
-print('bfSolver version',_version)
+
 
 import numpy as np
 import autoD as ad
