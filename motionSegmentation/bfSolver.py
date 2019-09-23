@@ -10,6 +10,8 @@ History:
                                                              -enable 2D for BC-point by point solver only
   Author: w.x.chan@gmail.com         12Sep2019           - v2.1.0
                                                              -save Sampling results at the end of solving
+  Author: w.x.chan@gmail.com         12Sep2019           - v2.2.4
+                                                             -change bfSolver.points to numpy array in loadSamplingResults
 Requirements:
     BsplineFourier
     numpy
@@ -19,7 +21,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.1.0'
+_version='2.2.4'
 
 
 import numpy as np
