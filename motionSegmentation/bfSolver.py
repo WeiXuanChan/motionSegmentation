@@ -165,7 +165,7 @@ class bfSolver:
             self.points.append(loadMatrix[n,:nd].copy())
             if n<coeflen:
                 self.pointsCoef.append(loadMatrix[n,nd:].reshape((-1,nd),order='F'))
-        
+        self.points=np.array(self.points)
     def addBsplineFile(self,BsplineFileList=None,timeMapList=None,weightList=None,fileScale=1.,twoD=False):
         ''' 
         add (multiple) BspineFile to solver
