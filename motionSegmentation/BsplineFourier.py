@@ -28,7 +28,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.2.0'
+_version='2.2.5'
 
 
 import numpy as np
