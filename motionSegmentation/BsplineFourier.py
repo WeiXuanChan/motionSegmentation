@@ -15,6 +15,8 @@ History:
                                                              -enable 2D
   Author: w.x.chan@gmail.com         16Sep2019           - v2.2.0
                                                              -added function fcoefImage
+  Author: jorry.zhengyu@gmail.com    26Sep2019           - v2.2.5
+                                                             -modify function motionImage - spacing==None                                                             
 Requirements:
     autoD
     numpy
@@ -1245,7 +1247,7 @@ class BsplineFourier(Bspline):
             imageSize=np.array(self.coef.shape[:self.coef.shape[-1]])*scaleFromGrid
             spacing=np.array(self.spacing[:self.coef.shape[-1]])/scaleFromGrid
         elif type(spacing)==type(None):
-            spacing=np.array(self.spacing[:self.coef.shape[-1]]*(np.array(self.coef.shape[:self.coef.shape[-1]]-1)/(imageSize-1)))
+            spacing=np.array(self.spacing[:self.coef.shape[-1]]*((np.array(self.coef.shape[:self.coef.shape[-1]])-1)/(np.array(imageSize)-1)))
         imageSize=np.array(imageSize).astype(int)
         if type(coefFourierWeight)==type(None):
             coefFourierWeight=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
@@ -1325,7 +1327,7 @@ class BsplineFourier(Bspline):
             imageSize=np.array(self.coef.shape[:self.coef.shape[-1]])*scaleFromGrid
             spacing=np.array(self.spacing[:self.coef.shape[-1]])/scaleFromGrid
         elif type(spacing)==type(None):
-            spacing=np.array(self.spacing[:self.coef.shape[-1]]*(np.array(self.coef.shape[:self.coef.shape[-1]]-1)/(imageSize-1)))
+            spacing=np.array(self.spacing[:self.coef.shape[-1]]*((np.array(self.coef.shape[:self.coef.shape[-1]])-1)/(np.array(imageSize)-1)))
         imageSize=np.array(imageSize).astype(int)
         if type(coefFourierWeight)==type(None):
             coefFourierWeight=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
