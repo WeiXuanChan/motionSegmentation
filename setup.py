@@ -8,7 +8,7 @@ setup(
   author = 'Wei Xuan Chan',                   # Type in your name
   author_email = 'w.x.chan1986@gmail.com',      # Type in your E-Mail
   url = 'https://github.com/WeiXuanChan/motionSegmentation',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/WeiXuanChan/motionSegmentation/archive/v2.2.4.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/WeiXuanChan/motionSegmentation/archive/v2.2.5.tar.gz',    # I explain this later on
   keywords = ['explicit', 'motion', 'regularization'],   # Keywords that define your package best
   install_requires=['numpy','autoD','scipy','trimesh'],
   classifiers=[
