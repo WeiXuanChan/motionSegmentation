@@ -2,7 +2,7 @@ from setuptools import setup
 setup(
   name = 'motionSegmentation',         # How you named your package folder (MyLib)
   packages = ['motionSegmentation'],   # Chose the same as "name"
-  version = '2.2.4',      # Start with a small number and increase it with every change you make
+  version = '2.2.5',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Explicit spatio-temporal regularization of motion tracking.',   # Give a short description about your library
   author = 'Wei Xuan Chan',                   # Type in your name
