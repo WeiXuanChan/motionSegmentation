@@ -19,6 +19,8 @@ History:
                                                              -modify function motionImage - spacing==None  
 Author: w.x.chan@gmail.com         16Sep2019           - v2.2.6
                                                              -modify function motionImage - correct spacing value when spacing==None
+Author: w.x.chan@gmail.com         07Oct2019           - v2.2.7
+                                                             -corrected self.origin[-1] from self.origin[3] to cater to 2D
 Requirements:
     autoD
     numpy
@@ -1174,7 +1176,7 @@ class BsplineFourier(Bspline):
             for n in range(len(coordsList)):
                 p.append(coordsList[n].copy())
                 for m in range(int(coefList[n].shape[0]/2)):#sub in t
-                    p[-1]=p[-1]+coefList[n][m+1]*np.cos((m+1.)*2.*np.pi*(time-self.origin[3])/self.spacing[3])+coefList[n][int(coefList[n].shape[0]/2)+m+1]*np.sin((m+1.)*2.*np.pi*(time-self.origin[3])/self.spacing[3])
+                    p[-1]=p[-1]+coefList[n][m+1]*np.cos((m+1.)*2.*np.pi*(time-self.origin[-1])/self.spacing[-1])+coefList[n][int(coefList[n].shape[0]/2)+m+1]*np.sin((m+1.)*2.*np.pi*(time-self.origin[-1])/self.spacing[-1])
         else:
             p=coordsList.copy()
         self.regrid(p,coefList,tRef=time)
