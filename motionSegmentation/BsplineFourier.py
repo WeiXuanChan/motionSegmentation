@@ -1222,7 +1222,7 @@ class BsplineFourier(Bspline):
                     sampleCoef.append(sampleCoefTemp.copy())
                 newbsFourier.regrid(samplePoints,sampleCoef)              
         return newbsFourier
-    def motionImage(self,imageSize=None,spacing=None,coefFourierWeight=None,xList=None,yList=None,zList=None,scaleFromGrid=None):
+    def motionImage(self,imageSize=None,spacing=None,coefFourierWeight=None,evaluateFunc=None,xList=None,yList=None,zList=None,scaleFromGrid=None):
         ''' 
         Create an image based on the amplitude of fourier coefficients
         Parameters:
@@ -1281,10 +1281,14 @@ class BsplineFourier(Bspline):
             for yn in range(len(yList)):
                 if self.coef.shape[-1]>2:
                     for zn in range(len(zList)):
-                        vec=self.getVector([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y'],zList[zn]*imgDimlen['z']])
-                        fvalue=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
-                        for m in range(int(self.coef.shape[self.coef.shape[-1]]/2)):
-                            fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
+                        if type(evaluateFunc)==type(None):
+                            vec=self.getVector([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y'],zList[zn]*imgDimlen['z']])
+                            fvalue=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
+                            for m in range(int(self.coef.shape[self.coef.shape[-1]]/2)):
+                                fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
+                        else:
+                            fvalue=evaluateFunc({'x':xList[xn]*imgDimlen['x'],'y':yList[yn]*imgDimlen['y'],'z':zList[zn]*imgDimlen['z']},{})
+                            fvalue=np.sqrt(fvalue[1:1+int(self.coef.shape[self.coef.shape[-1]]/2)]**2.+fvalue[-int(self.coef.shape[self.coef.shape[-1]]/2):]**2.)
                         imgData[xn,yn,zn]=(fvalue*coefFourierWeight).sum()
                         '''
                         weightRatio=fvalue[maxomega]/coefFourierWeight[maxomega]
@@ -1295,10 +1299,14 @@ class BsplineFourier(Bspline):
                         imgData[x,y,z]=weightRatio-errorRMS
                         '''
                 else:
-                    vec=self.getVector([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y']])
-                    fvalue=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
-                    for m in range(int(self.coef.shape[self.coef.shape[-1]]/2)):
-                        fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
+                    if type(evaluateFunc)==type(None):
+                        vec=self.getVector([xList[xn]*imgDimlen['x'],yList[yn]*imgDimlen['y']])
+                        fvalue=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
+                        for m in range(int(self.coef.shape[self.coef.shape[-1]]/2)):
+                            fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
+                    else:
+                        fvalue=evaluateFunc({'x':xList[xn]*imgDimlen['x'],'y':yList[yn]*imgDimlen['y']},{})
+                        fvalue=np.sqrt(fvalue[1:1+int(self.coef.shape[self.coef.shape[-1]]/2)]**2.+fvalue[-int(self.coef.shape[self.coef.shape[-1]]/2):]**2.)
                     imgData[xn,yn]=(fvalue*coefFourierWeight).sum()
         return (imgData,imgDimlen)
 
