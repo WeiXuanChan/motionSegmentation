@@ -34,7 +34,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.3.0'
+_version='2.3.1'
 
 
 import numpy as np
