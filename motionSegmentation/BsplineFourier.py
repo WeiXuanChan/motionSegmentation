@@ -21,7 +21,7 @@ Author: w.x.chan@gmail.com         16Sep2019           - v2.2.6
                                                              -modify function motionImage - correct spacing value when spacing==None
 Author: w.x.chan@gmail.com         07Oct2019           - v2.2.7
                                                              -corrected self.origin[-1] from self.origin[3] to cater to 2D
-Author: w.x.chan@gmail.com         07Oct2019           - v2.3.2
+Author: w.x.chan@gmail.com         07Oct2019           - v2.3.3
                                                              -added evaluateFunc to motionImage
 Requirements:
     autoD
@@ -34,7 +34,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.3.2'
+_version='2.3.3'
 
 
 import numpy as np
