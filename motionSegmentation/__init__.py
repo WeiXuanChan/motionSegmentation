@@ -51,6 +51,9 @@ Author: w.x.chan@gmail.com    26SEP2019                - v2.2.6
 						-bfSolver version 2.2.4
 						-BsplineFourier version 2.2.6
 						- do import *
+Author: w.x.chan@gmail.com    07OCT2019                - v2.2.7
+						-bfSolver version 2.2.4
+						-BsplineFourier version 2.2.7
 Requirements:
     autoD
     numpy
