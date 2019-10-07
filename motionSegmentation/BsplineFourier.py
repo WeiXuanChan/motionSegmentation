@@ -32,7 +32,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.2.6'
+_version='2.2.7'
 
 
 import numpy as np
