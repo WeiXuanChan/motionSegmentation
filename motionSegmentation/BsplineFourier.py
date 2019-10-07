@@ -1290,7 +1290,7 @@ class BsplineFourier(Bspline):
                                 fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
                         else:
                             fvalue=evaluateFunc({'x':xList[xn]*imgDimlen['x'],'y':yList[yn]*imgDimlen['y'],'z':zList[zn]*imgDimlen['z']},{})
-                            if type(fvalue) not in [int,float,np.ndarray]:
+                            if not(isinstance(fvalue,(int,float,np.ndarray))):
                                 fvalue=np.sqrt(fvalue.cosine**2.+fvalue.sine**2.)
                         imgData[xn,yn,zn]=(fvalue*coefFourierWeight).sum()
                         '''
@@ -1309,7 +1309,7 @@ class BsplineFourier(Bspline):
                             fvalue[m]=np.sqrt((vec[m+1]**2.+vec[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1]**2.).sum())
                     else:
                         fvalue=evaluateFunc({'x':xList[xn]*imgDimlen['x'],'y':yList[yn]*imgDimlen['y']},{})
-                        if type(fvalue) not in [int,float,np.ndarray]:
+                        if not(isinstance(fvalue,(int,float,np.ndarray))):
                             fvalue=np.sqrt(fvalue.cosine**2.+fvalue.sine**2.)
                     imgData[xn,yn]=(fvalue*coefFourierWeight).sum()
         return (imgData,imgDimlen)
