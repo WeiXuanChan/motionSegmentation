@@ -580,6 +580,98 @@ class Bspline:
         if singleInput:
             xyzList=xyzList[0]
         return xyzList
+    def getVectorImage(self,imageSize=None,spacing=None,scaleFromGrid=None,tVal=None,coefFourierWeight=None,vec=None,dxyzt=None,accuracy=1):
+        ''' 
+        Create an image based on the amplitude of fourier coefficients
+        Parameters:
+            imageSize=[x,y,z]:list,np.ndarray
+                image pixel size
+            coefFourierWeight=[fourierterm1,fourierterm2]:list,np.ndarray
+                weighs the courier terms of different frequencies cosine and sine are considered as a single term
+            scaleFromGrid: float of np.ndarray(3)
+                scale image size from bspline grid if image size is not given
+        Return:
+            imgData:np.ndarray
+                image intensity data
+            imgDimlen: dict
+                conversion of image pixel to real coordinates
+        Note: origin is conserved
+        '''
+        if type(dxyzt)==type(None):
+            dxyzt=list(np.zeros(self.coef.shape[-1]+1,dtype=int))
+        if type(scaleFromGrid)==type(None):
+            scaleFromGrid=10.
+        if type(imageSize)==type(None):
+            imageSize=np.array(self.coef.shape[:self.coef.shape[-1]])*scaleFromGrid
+            spacing=np.array(self.spacing[:self.coef.shape[-1]])/scaleFromGrid
+        elif type(spacing)==type(None):
+            spacing=np.array(self.spacing[:self.coef.shape[-1]]*((np.array(self.coef.shape[:self.coef.shape[-1]])-1-2*self.origin[:self.coef.shape[-1]]/self.spacing[:self.coef.shape[-1]])/(np.array(imageSize)-1)))
+        imageSize=np.array(imageSize).astype(int)
+        if type(axis)==type(None):
+            axis=list(range(self.coef.shape[-1]))
+        if type(coefFourierWeight)==type(None) and type(tVal)==type(None):
+            coefFourierWeight=np.zeros(int(self.coef.shape[self.coef.shape[-1]]/2))
+            coefFourierWeight[0]=1.
+        #get standard bspline spread
+        accuracy=int(accuracy)
+        bspread=np.ceil(self.spacing[:self.coef.shape[-1]]/spacing,dtype=int)*accuracy
+        bspreadSpacing=spacing/accuracy
+        bspreadGridSpacing=self.spacing[:self.coef.shape[-1]]/bspreadSpacing
+        bspreadOrigin=bspread*2
+        bspread=np.zeros(bspread*4)
+
+        for xn in range(bspread.shape[0]):
+            for yn in range(bspread.shape[1]):
+                if self.coef.shape[-1]>2:
+                    for zn in range(bspread.shape[2]):
+                        k=(np.array([xn,yn,zn])-bspreadOrigin)/bspreadGridSpacing+2
+                        if np.any(np.logical_or(k<=0,k>=4)):
+                            continue
+                        uvw=np.remainder(k,1.)
+                        k=3-k.astype(int)
+                        bspread[xn,yn,zn]=B[k[0]]({'b':uvw[0]},{'b':dxyzt[0]})*B[k[1]]({'b':uvw[1]},{'b':dxyzt[1]})*B[k[2]]({'b':uvw[2]},{'b':dxyzt[2]})
+                else:
+                    k=(np.array([xn,yn])-bspreadOrigin)/bspreadGridSpacing+2
+                    if np.any(np.logical_or(k<=0,k>=4)):
+                        continue
+                    uvw=np.remainder(k,1.)
+                    k=3-k.astype(int)
+                    bspread[xn,yn]=B[k[0]]({'b':uvw[0]},{'b':dxyzt[0]})*B[k[1]]({'b':uvw[1]},{'b':dxyzt[1]})
+                
+        if type(vec)==type(None):
+            vec=slice(None)
+        if dxyzt[-1]%4==0:
+            tempVal=[False,1.,1.] #swap, cos multiplier, sin multiplier
+        elif dxyzt[-1]%4==1:
+            tempVal=[True,1.,-1.]
+        elif dxyzt[-1]%4==2:
+            tempVal=[False,-1.,-1.]
+        elif dxyzt[-1]%4==3:
+            tempVal=[True,-1.,1.]
+            
+        imgData=np.zeros(imageSize)
+        for xn in range(self.coef.shape[0]):
+            for yn in range(self.coef.shape[1]):
+                if self.coef.shape[-1]>2:
+                    for zn in range(self.coef.shape[2]):
+                        coefCoord=(np.array([xn,yn,zn])*self.spacing[:3]+self.origin[:3])/spacing
+                        adjustCoord=np.round((coefCoord-np.round(coefCoord))*accuracy),dtype=int)######################
+                        adjustCoord+=bspreadOrigin
+                        temp_bspread=bspread[abs(adjustCoord[0])::accuracy].copy()
+                        imgData
+                else:
+                    k=np.array([xn,yn])*bspreadGridSpacing
+                    uvw=np.remainder(k,1.)
+                    k=3-k.astype(int)
+                    bspread[xn,yn]=B[k[0]]({'b':uvw[0]},{'b':dxyzt[0]})*B[k[1]]({'b':uvw[1]},{'b':dxyzt[1]})
+        
+        if type(tVal)!=type(None):
+            d
+        else:
+            
+
+        
+        return (imgData,imgDimlen)
     def scale(self,s):
         ''' 
         Scales self values in origin, spacing,coordinates and coefficients
@@ -2117,7 +2209,7 @@ class bsFourierAD(ad.AD):
                 result=self.bsFourier.getCoordFromRef(coord,vec=self.axis,dxyzt=dxyzt)
             elif type(self.bsFourier)==Bspline:
                 result=self.bsFourier.getVector(coord,vec=self.axis,dxyzt=dxyzt)
-            if type(result)==np.ndarray:
+            if type(result)==np.ndarray and self.axis!=None:
                 result=FourierSeries(result,self.freq)
         self.debugPrint(x,dOrder,result)
         return result
