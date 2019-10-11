@@ -15,7 +15,7 @@ History:
                                                              -enable 2D
   Author: w.x.chan@gmail.com         16Sep2019           - v2.2.0
                                                              -added function fcoefImage
-  Author: jorry.zhengyu@gmail.com    26Sep2019           - v2.2.5
+  Author: jorry.zhengyu@gmail.com    26Sep2019          - v2.2.5
                                                              -modify function motionImage - spacing==None  
 Author: w.x.chan@gmail.com         16Sep2019           - v2.2.6
                                                              -modify function motionImage - correct spacing value when spacing==None
@@ -2209,7 +2209,7 @@ class bsFourierAD(ad.AD):
                 result=self.bsFourier.getCoordFromRef(coord,vec=self.axis,dxyzt=dxyzt)
             elif type(self.bsFourier)==Bspline:
                 result=self.bsFourier.getVector(coord,vec=self.axis,dxyzt=dxyzt)
-            if type(result)==np.ndarray and self.axis!=None:
+            if type(result)==np.ndarray and type(self.axis)!=type(None):
                 result=FourierSeries(result,self.freq)
         self.debugPrint(x,dOrder,result)
         return result
