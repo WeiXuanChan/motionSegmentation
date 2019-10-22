@@ -2272,7 +2272,7 @@ class BspreadArray():
       self.numPerGrid=gridSpacing/self.spacing
       self.origin=np.ceil(self.numPerGrid*2+self.accuracy,dtype=int)
       self.data={}
-  def getbspread(self,imageCoord,key):
+  def getbspread(self,nodeImageCoord,key):
         #imageSize=None,spacing=None,scaleFromGrid=None,tVal=None,coefFourierWeight=None,vec=None,dxyzt=None,accuracy=1):
         ''' 
         Create an image based on the amplitude of fourier coefficients
@@ -2293,26 +2293,37 @@ class BspreadArray():
         if key[0]!='d':
             raise Exception('key error.')
         elif key in self.data:
-            return self.data[key].copy()
-        dxyz=[]
-        for n in range(1,len(key)):
-            dxyz.append(int(key[n]))
-        #get standard bspline spread
-        bspread=np.zeros(self.origin*2)
-        gridList=[]
-        for n in range(len(self.origin)):
-            gridList.append(range(self.origin[n]*2))
-        bcoord=(np.array(np.meshgrid(*gridList)).T-self.origin)/self.numPerGrid+2
-        uvw=np.remainder(bcoord,1.)
-        k=3-bcoord.astype(int)
-        setIndex=np.all(np.logical_and(k>=0,k<=3),axis=-1)
-        validk=k[setIndex]
-        validuvw=uvw[setIndex]
-        if self.twoD>2:
-            bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})*B[validk[...,2]]({'b':validuvw[...,2]},{'b':dxyz[2]})
+            bspread=self.data[key].copy()
         else:
-            bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})
-        self.data[key]=bspread
-        return bspread.copy()
+            dxyz=[]
+            for n in range(1,len(key)):
+                dxyz.append(int(key[n]))
+            #get standard bspline spread
+            bspread=np.zeros(self.origin*2)
+            gridList=[]
+            for n in range(len(self.origin)):
+                gridList.append(range(self.origin[n]*2))
+            bcoord=(np.array(np.meshgrid(*gridList)).T-self.origin)/self.numPerGrid+2
+            uvw=np.remainder(bcoord,1.)
+            k=3-bcoord.astype(int)
+            setIndex=np.all(np.logical_and(k>=0,k<=3),axis=-1)
+            validk=k[setIndex]
+            validuvw=uvw[setIndex]
+            if self.twoD>2:
+                bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})*B[validk[...,2]]({'b':validuvw[...,2]},{'b':dxyz[2]})
+            else:
+                bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})
+            self.data[key]=bspread.copy()
+        imgIndex=np.around(nodeImageCoord).astype(int)
+        adjust=np.around((nodeImageCoord-imgIndex)*self.accuracy).astype(int)
+        origin=self.origin+adjust
+        minget=np.maximum(-imgIndex,-np.ceil(self.numPerGrid/np.float(self.accuracy)*2).astype(int))
+        maxget=np.minimum(self.imageSize-imgIndex,np.ceil(self.numPerGrid/np.float(self.accuracy)*2).astype(int))
+        bspreadsliceList=[]
+        imgsliceList=[]
+        for n in range(self.twoD):
+            bspreadsliceList.append(slice(self.origin+minget[n]*self.accuracy,self.origin+maxget[n]*self.accuracy,self.accuracy))
+            imgsliceList.append(slice(imgIndex+minget[n],imgIndex+maxget[n]))
+        return (bspread[tuple(bspreadsliceList)],imgsliceList)
 
             
