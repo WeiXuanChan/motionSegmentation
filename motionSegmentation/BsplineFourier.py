@@ -2261,3 +2261,58 @@ class toSparseMatrixAD(ad.AD):
                     self.debugPrint(x,dOrder,0.)
                     return 0.
         return self.func(x,dOrder).toSparseMatrix(self.column)
+class BspreadArray():
+  def __new__(cls, *args, **kwargs):
+      return super().__new__(cls)
+  def __init__(self,imageSize,imageSpacing,gridSpacing,accuracy=1):
+      self.imageSize=imageSize
+      self.accuracy=int(accuracy)
+      self.twoD=len(imageSpacing)
+      self.spacing=imageSpacing/self.accuracy
+      self.numPerGrid=gridSpacing/self.spacing
+      self.origin=np.ceil(self.numPerGrid*2+self.accuracy,dtype=int)
+      self.data={}
+  def getbspread(self,imageCoord,key):
+        #imageSize=None,spacing=None,scaleFromGrid=None,tVal=None,coefFourierWeight=None,vec=None,dxyzt=None,accuracy=1):
+        ''' 
+        Create an image based on the amplitude of fourier coefficients
+        Parameters:
+            imageSize=[x,y,z]:list,np.ndarray
+                image pixel size
+            coefFourierWeight=[fourierterm1,fourierterm2]:list,np.ndarray
+                weighs the courier terms of different frequencies cosine and sine are considered as a single term
+            scaleFromGrid: float of np.ndarray(3)
+                scale image size from bspline grid if image size is not given
+        Return:
+            imgData:np.ndarray
+                image intensity data
+            imgDimlen: dict
+                conversion of image pixel to real coordinates
+        Note: origin is conserved
+        '''
+        if key[0]!='d':
+            raise Exception('key error.')
+        elif key in self.data:
+            return self.data[key].copy()
+        dxyz=[]
+        for n in range(1,len(key)):
+            dxyz.append(int(key[n]))
+        #get standard bspline spread
+        bspread=np.zeros(self.origin*2)
+        gridList=[]
+        for n in range(len(self.origin)):
+            gridList.append(range(self.origin[n]*2))
+        bcoord=(np.array(np.meshgrid(*gridList)).T-self.origin)/self.numPerGrid+2
+        uvw=np.remainder(bcoord,1.)
+        k=3-bcoord.astype(int)
+        setIndex=np.all(np.logical_and(k>=0,k<=3),axis=-1)
+        validk=k[setIndex]
+        validuvw=uvw[setIndex]
+        if self.twoD>2:
+            bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})*B[validk[...,2]]({'b':validuvw[...,2]},{'b':dxyz[2]})
+        else:
+            bspread[setIndex]=B[validk[...,0]]({'b':validuvw[...,0]},{'b':dxyz[0]})*B[validk[...,1]]({'b':validuvw[...,1]},{'b':dxyz[1]})
+        self.data[key]=bspread
+        return bspread.copy()
+
+            
