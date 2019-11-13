@@ -12,7 +12,7 @@ History:
                                                              -save Sampling results at the end of solving
   Author: w.x.chan@gmail.com         12Sep2019           - v2.2.4
                                                              -change bfSolver.points to numpy array in loadSamplingResults
-  Author: w.x.chan@gmail.com         13Nov2019           - v2.4.0
+  Author: w.x.chan@gmail.com         13Nov2019           - v2.4.1
                                                              -include mode of initial estimate with forwardbackward
 Requirements:
     BsplineFourier
@@ -23,7 +23,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.0'
+_version='2.4.1'
 
 
 import numpy as np
@@ -1377,7 +1377,7 @@ class bfSolver:
         print('Estimating coefficients with',len(sampleCoord),'sample points')
         for coord in sampleCoord:
             count+=1
-            if type(OrderedBsplinesList2)!=Type(None) and forwardbackward:
+            if type(OrderedBsplinesList2)!=type(None) and forwardbackward:
                 coordsThruTime=np.array(estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,mode='Eulerian'))
                 coordsThruTime2=np.array(estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList2,mode='Eulerian'))
                 Fratio=1./(1.+np.arange(len(coordsThruTime))/np.arange(len(coordsThruTime),0,-1))
