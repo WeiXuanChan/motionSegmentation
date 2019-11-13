@@ -12,6 +12,8 @@ History:
                                                              -save Sampling results at the end of solving
   Author: w.x.chan@gmail.com         12Sep2019           - v2.2.4
                                                              -change bfSolver.points to numpy array in loadSamplingResults
+  Author: w.x.chan@gmail.com         13Nov2019           - v2.4.0
+                                                             -include mode of initial estimate with forwardbackward
 Requirements:
     BsplineFourier
     numpy
@@ -21,7 +23,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.2.4'
+_version='2.4.0'
 
 
 import numpy as np
@@ -54,16 +56,23 @@ import time
 import trimesh
 
 FourierSeries_type=type(BsplineFourier.FourierSeries(1,1))
-def estCoordsThruTime(coord,bsplineList,OrderedBsplinesList,OrderedBsplinesList2=None):
+def estCoordsThruTime(coord,bsplineList,OrderedBsplinesList,OrderedBsplinesList2=None,mode='Lagrangian-Eulerian'):
     coordsThruTime=[coord.copy()]
-    for n in range(len(OrderedBsplinesList)):
-        vector=bsplineList[OrderedBsplinesList[n]].getVector(coordsThruTime[0])
-        newcoord=vector+coordsThruTime[0]
-        if type(OrderedBsplinesList2)!=type(None) and n>0 and n<(len(OrderedBsplinesList)-1):
-            ratio=float(n)*float(len(OrderedBsplinesList)-1-n)/((len(OrderedBsplinesList)-1)/2.)**2.
-            vector2=bsplineList[OrderedBsplinesList2[n]].getVector(coordsThruTime[-1])
-            newcoord=newcoord*(1.-ratio)+(ratio)*(coordsThruTime[-1]+vector2)
-        coordsThruTime.append(newcoord.copy())
+    if mode=='Eulerian':
+        for n in range(len(OrderedBsplinesList)):
+            vector=bsplineList[OrderedBsplinesList[n]].getVector(coordsThruTime[-1])
+            coordsThruTime.append(vector+coordsThruTime[-1])
+    elif mode=='Lagrangian-Eulerian':
+        for n in range(len(OrderedBsplinesList)):
+            vector=bsplineList[OrderedBsplinesList[n]].getVector(coordsThruTime[0])
+            newcoord=vector+coordsThruTime[0]
+            if type(OrderedBsplinesList2)!=type(None) and n>0 and n<(len(OrderedBsplinesList)-1):
+                ratio=float(n)*float(len(OrderedBsplinesList)-1-n)/((len(OrderedBsplinesList)-1)/2.)**2.
+                vector2=bsplineList[OrderedBsplinesList2[n]].getVector(coordsThruTime[-1])
+                newcoord=newcoord*(1.-ratio)+(ratio)*(coordsThruTime[-1]+vector2)
+            coordsThruTime.append(newcoord.copy())
+    else:
+        raise Exception('mode selection error.')
     return coordsThruTime
 def getCoordfromCoef(coord,coef,spacing):
     coeftemp=coef[0].copy()
@@ -1342,7 +1351,7 @@ class bfSolver:
         return newImg
                     
         
-    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0):
+    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False):
         ''' 
         Estimates bsplineFourier with forward marching
         Parameters:
@@ -1356,6 +1365,8 @@ class bfSolver:
                 sampling points density between bsplineFourier grid
             gap:int
                 number of sampling points near the boundary removed (1 means that all the sampling points at the boundary are removed)
+            backwardforward: boolean
+                if True, OrderedBsplinesList is List of index in self.bsplines to use as tn to tn+1 marching while OrderedBsplinesList2 is tn to tn-1
         '''
         if type(OrderedBsplinesList)==int:
             OrderedBsplinesList=range(OrderedBsplinesList)
@@ -1366,7 +1377,14 @@ class bfSolver:
         print('Estimating coefficients with',len(sampleCoord),'sample points')
         for coord in sampleCoord:
             count+=1
-            coordsThruTime=estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,OrderedBsplinesList2=OrderedBsplinesList2)
+            if type(OrderedBsplinesList2)!=Type(None) and forwardbackward:
+                coordsThruTime=np.array(estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,mode='Eulerian'))
+                coordsThruTime2=np.array(estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList2,mode='Eulerian'))
+                Fratio=1./(1.+np.arange(len(coordsThruTime))/np.arange(len(coordsThruTime),0,-1))
+                coordsThruTime2=np.roll(coordsThruTime2[::-1],1,axis=0)
+                coordsThruTime=Fratio.reshape((-1,1,1))*coordsThruTime+(1-Fratio.reshape((-1,1,1)))*coordsThruTime2
+            else:
+                coordsThruTime=estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,OrderedBsplinesList2=OrderedBsplinesList2,mode='Lagrangian-Eulerian')
             if refTimeStep!=0:
                 tempcoordsThruTime=coordsThruTime.copy()
                 tempcoordsThruTime[:refTimeStep]=coordsThruTime[-refTimeStep:]
