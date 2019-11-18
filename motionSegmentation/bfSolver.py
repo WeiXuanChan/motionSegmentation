@@ -14,6 +14,8 @@ History:
                                                              -change bfSolver.points to numpy array in loadSamplingResults
   Author: w.x.chan@gmail.com         13Nov2019           - v2.4.1
                                                              -include mode of initial estimate with forwardbackward
+  Author: w.x.chan@gmail.com         18Nov2019           - v2.4.3
+                                                             -debug initial estimate with forwardbackward (reshap Fratio)
 Requirements:
     BsplineFourier
     numpy
@@ -23,7 +25,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.1'
+_version='2.4.3'
 
 
 import numpy as np
@@ -1382,7 +1384,7 @@ class bfSolver:
                 coordsThruTime2=np.array(estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList2,mode='Eulerian'))
                 Fratio=1./(1.+np.arange(len(coordsThruTime))/np.arange(len(coordsThruTime),0,-1))
                 coordsThruTime2=np.roll(coordsThruTime2[::-1],1,axis=0)
-                coordsThruTime=Fratio.reshape((-1,1,1))*coordsThruTime+(1-Fratio.reshape((-1,1,1)))*coordsThruTime2
+                coordsThruTime=Fratio.reshape((-1,1))*coordsThruTime+(1-Fratio.reshape((-1,1)))*coordsThruTime2
             else:
                 coordsThruTime=estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,OrderedBsplinesList2=OrderedBsplinesList2,mode='Lagrangian-Eulerian')
             if refTimeStep!=0:
