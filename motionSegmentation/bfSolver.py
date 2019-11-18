@@ -15,7 +15,7 @@ History:
   Author: w.x.chan@gmail.com         13Nov2019           - v2.4.1
                                                              -include mode of initial estimate with forwardbackward
   Author: w.x.chan@gmail.com         18Nov2019           - v2.4.3
-                                                             -debug initial estimate with forwardbackward (reshap Fratio)
+                                                             -debug initial estimate with forwardbackward (reshape Fratio)
 Requirements:
     BsplineFourier
     numpy
