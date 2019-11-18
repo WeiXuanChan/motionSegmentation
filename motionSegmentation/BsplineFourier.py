@@ -1792,7 +1792,7 @@ class FourierSeries:
         for n in range(len(self.cosine)):
             result+=self.cosine[n]*np.cos(freq_rad*(n+1)*t)
         for n in range(len(self.sine)):
-            result+=self.sine[n]*np.cos(freq_rad*(n+1)*t)
+            result+=self.sine[n]*np.sin(freq_rad*(n+1)*t)
         return result
     def integratePeriodAverage(self):
         return self.constant
