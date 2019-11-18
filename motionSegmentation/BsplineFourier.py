@@ -23,6 +23,8 @@ Author: w.x.chan@gmail.com         07Oct2019           - v2.2.7
                                                              -corrected self.origin[-1] from self.origin[3] to cater to 2D
 Author: w.x.chan@gmail.com         07Oct2019           - v2.3.3
                                                              -added evaluateFunc to motionImage
+Author: w.x.chan@gmail.com         18Nov2019           - v2.4.2
+                                                             -added __call__(self,t) to evaluate FourierSeries
 Requirements:
     autoD
     numpy
@@ -34,7 +36,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.3.3'
+_version='2.4.2'
 
 
 import numpy as np
@@ -1783,6 +1785,14 @@ class FourierSeries:
             result=FourierSeries(np.concatenate((np.array([0]),tempVal[1]*freq_rad*self.sine,tempVal[2]*freq_rad*self.cosine)),self.freq)
         else:
             result=FourierSeries(np.concatenate((np.array([0]),tempVal[1]*freq_rad*self.cosine,tempVal[2]*freq_rad*self.sine)),self.freq)
+        return result
+    def __call__(self,t):
+        freq_rad=2.*np.pi*self.freq
+        result=self.constant
+        for n in range(len(self.cosine)):
+            result+=self.cosine[n]*np.cos(freq_rad*(n+1)*t)
+        for n in range(len(self.sine)):
+            result+=self.sine[n]*np.cos(freq_rad*(n+1)*t)
         return result
     def integratePeriodAverage(self):
         return self.constant
