@@ -66,7 +66,7 @@ Author: w.x.chan@gmail.com    18NOV2019                - v2.4.2
 Author: w.x.chan@gmail.com    18NOV2019                - v2.4.3
 						-bfSolver version 2.4.3
 						-BsplineFourier version 2.4.2
-Author: w.x.chan@gmail.com    18NOV2019                - v2.4.4
+Author: w.x.chan@gmail.com    18NOV2019                - v2.4.5
 						-bfSolver version 2.4.4
 						-BsplineFourier version 2.4.4
 Requirements:
@@ -81,10 +81,10 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.4.4'
+_version='2.4.5'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
-logger.info('motionSegmentation version',_version)
+logger.info('motionSegmentation version '+_version)
 
 import os
 import sys
