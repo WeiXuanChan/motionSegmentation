@@ -91,7 +91,6 @@ class Bspline:
         origin=[x,y,z]
         timeMap=[t1,t2] vector stored maps t1 to t2
         '''
-        logger.warning('Warning: only Bspline with [x,y,z,uvw] accepted')
         self.coef=None
         self.origin=None
         self.spacing=None
