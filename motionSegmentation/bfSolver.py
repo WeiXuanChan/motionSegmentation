@@ -93,7 +93,6 @@ def load(file):
 def SAC(val,cI):
     if len(val)==0:
         value=0
-        #logger.info('no value at coords',x,y,z)
     elif (val.max()-val.min())<=3:
         value=val.mean()
     else:
@@ -307,11 +306,11 @@ class bfSolver:
             if self.bsFourier.coef.shape!=shape:
                 self.bsFourier=self.bsFourier.reshape(shape)
                 logger.info('Adjusted to:')
-                logger.info('    shape=',self.bsFourier.coef.shape)
-                logger.info('    origin=',self.bsFourier.origin)
-                logger.info('    spacing=',self.bsFourier.spacing)
+                logger.info('    shape= '+str(self.bsFourier.coef.shape))
+                logger.info('    origin= '+str(self.bsFourier.origin))
+                logger.info('    spacing= '+str(self.bsFourier.spacing))
         self.points=np.array(self.bsFourier.samplePoints(spacingDivision=spacingDivision,gap=gap))
-        logger.info('Initialized with',len(self.points),'points.')
+        logger.info('Initialized with '+str(len(self.points))+'points.')
 
         
     def solve(self,tRef=None,maxError=0.00001,maxIteration=1000,convergence=0.8,method='pointbypoint',reportevery=1000,tempSave=None,resume=False,rmsBasedWeighted=None,linearConstrainPoints=[],linearConstrainWeight=None):
@@ -480,8 +479,6 @@ class bfSolver:
                         lmLambda=lmLambda_max
                         reductionRatio*=0.8
                     count+=0.02
-                    #logger.info('deltarms=',deltarms,'from rms=',rms)
-                    #logger.info('reduce ratio to',reduceRatio)
                 else:
                     if ratio>0.9 and lmLambda!=lmLambda_min:
                         if (lmLambda/np.sqrt(lmLambda_incrRatio))>lmLambda_min:
@@ -498,9 +495,9 @@ class bfSolver:
             rmsList.append(rms)
             self.pointsCoef.append(coef.copy())
             if count==maxIteration:
-                logger.warning('Maximum iterations reached for point',m,self.points[m])
+                logger.warning('Maximum iterations reached for point '+str(m)+' '+str(self.points[m]))
             if m%reportevery==0:
-                logger.info('Solved for point',m+1,'/',len(self.points),self.points[m],',rms start=',rmsStart,'rms end=',rms,',max rms=',max(rmsList))
+                logger.info('Solved for point '+str(m+1)+'/'+str(len(self.points))+' '+str(self.points[m])+',rms start= '+str(rmsStart)+'rms end= '+str(rms)+',max rms= '+str(max(rmsList)))
                 if type(tempSave)!=type(None):
                     self.writeSamplingResults(tempSave)
         if type(tempSave)!=type(None):
@@ -554,7 +551,7 @@ class bfSolver:
         error=float('inf')
 
         numCoef=self.bsFourier.numCoef*3
-        logger.info('Solving',numCoef,'coefficients...')
+        logger.info('Solving '+str(numCoef)+'coefficients...')
         
         fxstarmapInput=np.empty( (len(self.points),3), dtype=object)
         for m in range(len(self.points)):
@@ -581,7 +578,7 @@ class bfSolver:
                 fx_temp=pool.starmap(self.eqn[n],fxstarmapInput[self.eqnToPts[n]][:,[0,1]])
             pool.close()
             pool.join()
-            logger.info('Equation',n,': rms=',np.sqrt(np.mean(np.array(fx_temp)**2.)),', wrms=',self.eqnWeight[n]*np.sqrt(np.mean(np.array(fx_temp)**2.)))
+            logger.info('Equation '+str(n)+': rms= '+str(np.sqrt(np.mean(np.array(fx_temp)**2.)))+', wrms= '+str(self.eqnWeight[n]*np.sqrt(np.mean(np.array(fx_temp)**2.))))
             fx=np.concatenate((fx,np.array(fx_temp)))
         sys.stdout.write("\rCalculating fx: 100.00%")
         sys.stdout.flush()
@@ -602,7 +599,7 @@ class bfSolver:
             temp_path ='/tmp/'
         #tsm=toSparseMatrix(numCoef)
         while error>maxError and count<maxIteration:
-            logger.info(' Iteration',count,'rms=',rms)
+            logger.info(' Iteration '+str(count)+'rms= '+str(rms))
             np.savetxt(temp_path+'fx.txt',fx)
             if recalculateJmat or flexibleDescent>0:
                 #Jmat=np.empty(0,dtype=object)
@@ -644,7 +641,7 @@ class bfSolver:
                     raise Exception('Not enough equations to support solving!')
                 natEq=np.array(natEq)
                 if count==0:
-                    logger.info('Eqn constant=',np.sqrt(np.mean(natEq**2.)))
+                    logger.info('Eqn constant= '+str(np.sqrt(np.mean(natEq**2.))))
             else:
                 Jmat=sparse.load_npz(temp_path+'lastJmat.npz')
                 recalculateJmat=True
@@ -675,7 +672,7 @@ class bfSolver:
                 if dC[1]==0:
                     logger.info(' successful.')
                 elif dC[1]>0:
-                    logger.warning(' convergence to tolerance not achieved, number of iterations',dC[1])
+                    logger.warning(' convergence to tolerance not achieved, number of iterations '+str(dC[1]))
                     if (lmLambda*lmLambda_incrRatio)<lmLambda_max:
                         lmLambda*=lmLambda_incrRatio
                     else:
@@ -746,8 +743,7 @@ class bfSolver:
                     reductionRatio*=0.8
                 count+=1-flexiCount
                 flexiCount=0
-                logger.info(' drms=',deltarms)
-                #logger.info('reduce ratio to',reduceRatio)
+                logger.info(' drms= '+str(deltarms))
             else:
                 if deltarms>0.:
                     flexiCount+=1
@@ -802,7 +798,7 @@ class bfSolver:
         else:
             temp_path ='/tmp/'
         numCoef=self.bsFourier.numCoef*3
-        logger.info('Solving',numCoef,'coefficients...')
+        logger.info('Solving '+str(numCoef)+'coefficients...')
         
         wdiag=np.ones(0)#len(self.pointsCoef)*(len(self.pointsCoef[0])-1)*3)
         for n in range(len(self.eqn)):
@@ -830,7 +826,7 @@ class bfSolver:
         #del Jmat_base
         del dCList
         del CIndList
-        logger.info('Base equation : rms=',np.sqrt(np.mean((fx_base-Jmat_base.dot(self.bsFourier.coef[:,:,:,1:].transpose(4,3,0,1,2).reshape(-1,order='F')))**2.)))
+        logger.info('Base equation : rms= '+str(np.sqrt(np.mean((fx_base-Jmat_base.dot(self.bsFourier.coef[:,:,:,1:].transpose(4,3,0,1,2).reshape(-1,order='F')))**2.))))
         fx=np.zeros(0)
         for n in range(len(self.eqn)):
             '''
@@ -850,7 +846,7 @@ class bfSolver:
                 fx_temp=pool.starmap(self.eqn[n],fxstarmapInput[self.eqnToPts[n]][:,[0,1]])
             pool.close()
             pool.join()
-            logger.info('Equation',n,': rms=',np.sqrt(np.mean(np.array(fx_temp)**2.)),', wrms=',self.eqnWeight[n]*np.sqrt(np.mean(np.array(fx_temp)**2.)))
+            logger.info('Equation '+str(n)+': rms= '+str(np.sqrt(np.mean(np.array(fx_temp)**2.)))+', wrms= '+str(self.eqnWeight[n]*np.sqrt(np.mean(np.array(fx_temp)**2.))))
             fx=np.concatenate((fx,np.array(fx_temp)))
         del fx_temp
 
@@ -867,7 +863,7 @@ class bfSolver:
         
         #tsm=toSparseMatrix(numCoef)
         while error>maxError and count<maxIteration:
-            logger.info(' Iteration',count,'rms=',rms)
+            logger.info(' Iteration '+str(count)+'rms= '+str(rms))
             np.savetxt(temp_path+'fx.txt',fx)
             if recalculateJmat or flexibleDescent>0:
                 #Jmat=np.empty(0,dtype=object)
@@ -907,7 +903,7 @@ class bfSolver:
                 del tempJn
                 natEq=np.array(natEq)
                 if count==0:
-                    logger.info('Eqn constant=',np.sqrt(np.mean(natEq**2.)))
+                    logger.info('Eqn constant= '+str(np.sqrt(np.mean(natEq**2.))))
             else:
                 Jmat=sparse.load_npz(temp_path+'lastJmat.npz')
                 recalculateJmat=True
@@ -946,7 +942,7 @@ class bfSolver:
                 if newC[1]==0:
                     logger.info(' successful.')
                 elif newC[1]>0:
-                    logger.warning(' convergence to tolerance not achieved, number of iterations',dC[1])
+                    logger.warning(' convergence to tolerance not achieved, number of iterations '+str(dC[1]))
                     if (lmLambda*lmLambda_incrRatio)<lmLambda_max:
                         lmLambda*=lmLambda_incrRatio
                     else:
@@ -1003,7 +999,7 @@ class bfSolver:
             del fx_temp
             deltarms=np.sqrt(np.mean(np.concatenate((fx_base-Jmat_base.dot(self.bsFourier.coef[:,:,:,1:].transpose(4,3,0,1,2).reshape(-1,order='F')),wdiag*fx))**2.))-rms
             if deltarms>0. and flexiCount>=flexibleDescent:
-                logger.info('Reverting back to iteration',count-flexiCount,'.')
+                logger.info('Reverting back to iteration '+str(count-flexiCount)+'.')
                 if flexibleDescent==0:
                     recalculateJmat=False
                 self.bsFourier.coef=coef_backup.copy()
@@ -1017,7 +1013,7 @@ class bfSolver:
                     reductionRatio*=0.8
                 count+=1-flexiCount
                 flexiCount=0
-                logger.info(' drms=',deltarms)
+                logger.info(' drms= '+str(deltarms))
                 #logger.info('reduce ratio to',reduceRatio)
             else:
                 if deltarms>0.:
@@ -1079,7 +1075,7 @@ class bfSolver:
         isArray=False
         if type(mask)==np.ndarray:
             isArray=True
-        logger.info('Creating Image with shape',resultImage.data.shape)
+        logger.info('Creating Image with shape '+str(resultImage.data.shape))
         if scheme=='SAC-G':
             if type(schemeArgs)==type(None) or type(schemeArgs)==float:
                 Gsampling=medImgProc.image.gaussianSampling(resultImage.dim,image.dimlen)
@@ -1102,7 +1098,6 @@ class bfSolver:
                         if mask[z,y,x]<1:
                           if len(val)==0:
                             value=0
-                            #logger.info('no value at coords',x,y,z)
                         elif (val.max()-val.min())<=3:
                             value=val.mean()
                         else:  continue
@@ -1256,7 +1251,7 @@ class bfSolver:
             residualImage.data=np.zeros((*resultImageshape[:4],3))
             residualImage.dim=residualImage.dim[:4]+['r']
             residualImage.dimlen={'x':residualImage.dimlen['x'],'y':residualImage.dimlen['y'],'z':residualImage.dimlen['z'],'t':residualImage.dimlen['t'],'r':1}
-        logger.info('Creating Image with shape',resultImage.data.shape)
+        logger.info('Creating Image with shape '+str(resultImage.data.shape))
         for xn in range(len(xList)):
             if reportlevel>=0:
                 logger.info('    {0:.3f}% completed...'.format(float(xn)/len(xList)*100.))
@@ -1291,7 +1286,7 @@ class bfSolver:
         distance=np.ones(refImage.data.shape)*float('inf')
         if type(xList)!=type(None) or type(yList)!=type(None) or type(zList)!=type(None):
             maxmotion=np.abs(self.bsFourier.getBspline(time)).max(axis=0).max(axis=0).max(axis=0)/np.array([refImage.dimlen['x'],refImage.dimlen['y'],refImage.dimlen['z']])
-            logger.info(maxmotion)
+            logger.info(str(maxmotion))
         if type(xList)==type(None):
             xList=np.arange(0,refImage.data.shape[0]-1.+1./sampleRate,1./sampleRate)
         else:
@@ -1304,7 +1299,7 @@ class bfSolver:
             zList=np.arange(0,refImage.data.shape[2]-1.+1./sampleRate,1./sampleRate)
         else:
             zList=np.arange(max(0,min(zList)-maxmotion[2]),min(refImage.data.shape[2]-1.+1./sampleRate,max(zList)+maxmotion[2]),1./sampleRate)
-        logger.info('Calculating xpixels',min(xList),'to',max(xList),', ypixels',min(yList),'to',max(yList),', zpixels',min(zList),'to',max(zList))
+        logger.info('Calculating xpixels '+str(min(xList))+'to '+str(max(xList))+', ypixels '+str(min(yList))+'to '+str(max(yList))+', zpixels '+str(min(zList))+'to '+str(max(zList)))
         for x in xList:
             logger.info('    {0:.3f}% completed...'.format(float(list(xList).index(x))/len(xList)*100.))
             for y in yList:
@@ -1328,7 +1323,6 @@ class bfSolver:
         xyzRef=np.mgrid[0:refImage.data.shape[0], 0:refImage.data.shape[1],0:refImage.data.shape[2]].reshape(3,*refImage.data.shape[:3]).transpose(1,2,3,0)
         xyzRef=xyzRef.reshape((-1,3))*np.array([refImage.dimlen['x'],refImage.dimlen['y'],refImage.dimlen['z']])
         xyzTime=self.bsFourier.getCoordFromRef(np.hstack((xyzRef,np.ones((len(xyzRef),1))*time)))/np.array([refImage.dimlen['x'],refImage.dimlen['y'],refImage.dimlen['z']])
-        logger.info('here')
         intensity=refImage.data.reshape(-1)
         baseind=np.around(xyzTime).astype(int)
         for n in range(len(intensity)):
@@ -1343,8 +1337,8 @@ class bfSolver:
                                 distance[tuple(ind)]=dis
         '''
         xx,yy,zz=np.nonzero(distance==float('inf'))
-        logger.info(len(xx),'unaltered pixels')
-        logger.info(np.array([xx,yy,zz]).transpose())
+        logger.info(str(len(xx))+' unaltered pixels')
+        logger.info(str(np.array([xx,yy,zz]).transpose()))
         '''
         while len(xx)>0:
             for x in xx:
@@ -1377,7 +1371,7 @@ class bfSolver:
         sampleCoef=[]
         refCoord=[]
         count=0
-        logger.info('Estimating coefficients with',len(sampleCoord),'sample points')
+        logger.info('Estimating coefficients with '+str(len(sampleCoord))+'sample points')
         for coord in sampleCoord:
             count+=1
             if type(OrderedBsplinesList2)!=type(None) and forwardbackward:
@@ -1407,7 +1401,7 @@ class bfSolver:
                 sampleCoef[-1][0]=-getCoordfromCoef(np.array([*coord[:self.points.shape[-1]],tRef-self.bsFourier.origin[self.points.shape[-1]]]),sampleCoef[-1],self.bsFourier.spacing)
             
             refCoord.append(sampleCoeftemp[:,0].copy())
-        logger.info('Calculated',len(refCoord),'sample points')
+        logger.info('Calculated '+str(len(refCoord))+'sample points')
         
         self.bsFourier.regrid(refCoord,sampleCoef,tRef=tRef)
         return (refCoord,sampleCoef)
