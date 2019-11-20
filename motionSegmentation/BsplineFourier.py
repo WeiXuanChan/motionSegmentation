@@ -25,7 +25,7 @@ Author: w.x.chan@gmail.com         07Oct2019           - v2.3.3
                                                              -added evaluateFunc to motionImage
 Author: w.x.chan@gmail.com         18Nov2019           - v2.4.2
                                                              -added __call__(self,t) to evaluate FourierSeries
-Author: w.x.chan@gmail.com         18Nov2019           - v2.4.3
+Author: w.x.chan@gmail.com         18Nov2019           - v2.4.4
                                                              -changed to logging
 Requirements:
     autoD
@@ -38,7 +38,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.2'
+_version='2.4.4'
 
 import logging
 import numpy as np
