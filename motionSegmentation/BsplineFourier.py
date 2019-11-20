@@ -99,16 +99,16 @@ class Bspline:
         if type(coefFile)!=type(None):
             self.read(coefFile=coefFile,timeMap=timeMap,shape=shape,spacing=spacing,fileScale=fileScale,delimiter=delimiter,origin=origin)
         if type(self.coef)==np.ndarray:
-            logger.info('shape=',self.coef.shape)
-        logger.info('spacing=',self.spacing)
-        logger.info('origin=',self.origin)
-        logger.info('timeMap=',self.timeMap)
+            logger.info('shape= '+str(self.coef.shape))
+        logger.info('spacing= '+str(self.spacing))
+        logger.info('origin= '+str(self.origin))
+        logger.info('timeMap= '+str(self.timeMap))
     def read(self,coefFile=None,timeMap=[None,None],shape=None,spacing=None,fileScale=1.,delimiter=' ',origin=None):
         if type(coefFile)!=type(None):
             if type(shape)!=type(None):
               try:
                   self.coef=np.loadtxt(coefFile,delimiter=delimiter).reshape(shape, order='F')
-                  logger.info('Loading',coefFile)
+                  logger.info('Loading '+coefFile)
               except:
                   pass
             if type(self.coef)==type(None):
@@ -117,7 +117,7 @@ class Bspline:
                 except:
                     pass
             if type(self.coef)==type(None):
-                logger.info('Loading',coefFile)
+                logger.info('Loading '+str(coefFile))
                 with open (coefFile, "r") as myfile:
                     data=myfile.readlines()
                 for string in data:
@@ -283,7 +283,7 @@ class Bspline:
 
         
         if np.any(uvw<-np.array(self.coef.shape[:self.coef.shape[-1]])) or np.any(uvw>(np.array(self.coef.shape[:self.coef.shape[-1]])*2.)):
-            logger.warning('WARNING! Coordinates',coord,'far from active region queried! Grid Coord=',uvw)
+            logger.warning('WARNING! Coordinates '+str(coord)+'far from active region queried! Grid Coord= '+str(uvw))
         '''
         if np.any(uvw<1) or np.any(uvw>np.array(self.coef.shape[:3])-2):
             coef=self.getExtendedCoef(uvw).copy()
@@ -621,7 +621,7 @@ class ImageVector:
         self.timeMap=timeMap
         if type(coefFile)!=type(None):
             self.read(coefFile=coefFile,timeMap=timeMap,fileScale=fileScale,delimiter=delimiter,origin=origin)
-        logger.info('timeMap=',self.timeMap)
+        logger.info('timeMap= '+str(self.timeMap))
     def read(self,coefFile=None,timeMap=[None,None],fileScale=1.,delimiter=' ',origin=None):
         img=medImgProc.imread(coefFile,dimension=['x','y','z'],module='medpy')
         self.coef=[]
@@ -703,7 +703,6 @@ class BsplineFourier(Bspline):
         
         '''
         super().__init__()
-        logger.warning('Warning: only Bspline fourier with [x,y,z,fourierTerms,uvw] accepted')
         self.fourierFormat=None
         self.numCoefXYZ=0
         self.numCoef=0
@@ -732,9 +731,9 @@ class BsplineFourier(Bspline):
             self.coordMat = np.mgrid[tuple(mgridslice)].reshape(shape[-1],*shape[:shape[-1]]).transpose(*tuple(range(1,shape[-1]+1)),0)
         if type(self.coef)==type(None):
             self.coef=np.zeros(shape)
-        logger.info('Origin=',self.origin)
-        logger.info('Spacing=',self.spacing)
-        logger.info('Fourier Format=',self.fourierFormat)
+        logger.info('Origin= '+str(self.origin))
+        logger.info('Spacing= '+str(self.spacing))
+        logger.info('Fourier Format= '+str(self.fourierFormat))
         self.numCoefXYZ=1
         for n in self.coef.shape[:self.coef.shape[-1]]:
             self.numCoefXYZ*=n
@@ -893,7 +892,7 @@ class BsplineFourier(Bspline):
                         lmLambda=lmLambda_max
                     count+=0.02
                 if count==maxIteration:
-                    logger.warning('Maximum iterations reached for point',m,self.points[m])
+                    logger.warning('Maximum iterations reached for point '+str(m)+str(self.points[m]))
             resultCoords.append(ref[:self.coef.shape[-1]].copy())
         if singleInput:
             resultCoords=resultCoords[0]
@@ -1120,7 +1119,7 @@ class BsplineFourier(Bspline):
             coefList(fourier,uvw):list,np.ndarray
                 u, v and w fourier coefficients
         '''
-        logger.info('Regriding',len(coordsList),'points.')
+        logger.info('Regriding '+str(len(coordsList))+'points.')
         noneSlice=[]
         for n in range(self.coef.shape[-1]):
             noneSlice.append(slice(None))
@@ -1170,7 +1169,7 @@ class BsplineFourier(Bspline):
                 if np.allclose(matA.dot(C), natb):
                     self.coef[tuple(noneSlice+[nFourier,axis])]=C.reshape(self.coef.shape[:self.coef.shape[-1]],order='F')
                 else:
-                    logger.warning('Solution error at fourier term',nFourier,', and axis',axis)
+                    logger.warning('Solution error at fourier term '+str(nFourier)+', and axis '+str(axis))
         if type(tRef)==type(None):
             self.coef[tuple(noneSlice+[0])]=0.
         else:
@@ -1401,12 +1400,12 @@ class Affine:
         if type(coefFile)!=type(None):
             self.read(coefFile=coefFile,fileScale=fileScale,delimiter=delimiter,correctOrigin=correctOrigin)
         if type(self.coef)==np.ndarray:
-          logger.info('shape=',self.coef.shape)
+          logger.info('shape= '+str(self.coef.shape))
     def read(self,coefFile=None,fileScale=1.,delimiter=' ',correctOrigin=True):
         if type(coefFile)!=type(None):
             try:
                 self.coef=np.loadtxt(coefFile,delimiter=delimiter).reshape((4,4), order='F')
-                logger.info('Loading',coefFile)
+                logger.info('Loading '+coefFile)
             except:
                 pass
             if type(self.coef)==type(None):
@@ -1415,7 +1414,7 @@ class Affine:
                 except:
                     pass
             if type(self.coef)==type(None):
-                logger.info('Loading',coefFile)
+                logger.info('Loading '+str(coefFile))
                 with open (coefFile, "r") as myfile:
                     data=myfile.readlines()
                 for string in data:
@@ -1526,7 +1525,7 @@ class CompositeTransform:
         if type(coefFile)!=type(None):
             try:
                 self.coef=np.loadtxt(coefFile,delimiter=delimiter).reshape((4,4), order='F')
-                logger.info('Loading',coefFile)
+                logger.info('Loading '+coefFile)
             except:
                 pass
             if type(self.coef)==type(None):
@@ -1535,7 +1534,7 @@ class CompositeTransform:
                 except:
                     pass
             if type(self.coef)==type(None):
-                logger.info('Loading',coefFile)
+                logger.info('Loading '+str(coefFile))
                 with open (coefFile, "r") as myfile:
                     data=myfile.readlines()
                 for string in data:
