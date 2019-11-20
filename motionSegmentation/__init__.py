@@ -83,7 +83,8 @@ All rights reserved.
 '''
 _version='2.4.4'
 import logging
-logging.info('motionSegmentation version',_version)
+logger = logging.getLogger('motionSegmentation version',_version)
+logger.info('motionSegmentation version',_version)
 
 import os
 import sys
