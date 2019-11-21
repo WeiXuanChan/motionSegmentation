@@ -2035,7 +2035,7 @@ class BsplineFunctionofBsplineFourierAD(ad.AD):
         else:
             self.axis=None
         self.tRef=tRef
-    def __call__(self,x,dOrder):
+    def __call__(self,x,dOrder={}):
         if 'ALL' not in self.dependent:
             for var in dOrder:
                 if dOrder[var]>0 and (var not in self.dependent):
