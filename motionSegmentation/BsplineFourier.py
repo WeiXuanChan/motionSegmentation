@@ -44,6 +44,7 @@ _version='2.4.6'
 
 import logging
 logger = logging.getLogger(__name__)
+import os
 import numpy as np
 import autoD as ad
 import re
@@ -183,6 +184,7 @@ class Bspline:
         '''
         np.savetxt(filepath,self.coef.reshape(-1, order='F'),delimiter=delimiter,comments='',header='(GridOrigin '+' '.join(map(str, self.origin))+')\n(GridSize '+' '.join(map(str, self.coef.shape))+')\n(GridSpacing '+' '.join(map(str, self.spacing))+')')
     def writeSITKfile(self,filepath,imageSize=None,imageSpacing=None):
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         if type(imageSize)==type(None):
             imageSize=self.coef.shape
         if type(imageSpacing)==type(None):
