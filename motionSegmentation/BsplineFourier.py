@@ -184,7 +184,7 @@ class Bspline:
         np.savetxt(filepath,self.coef.reshape(-1, order='F'),delimiter=delimiter,comments='',header='(GridOrigin '+' '.join(map(str, self.origin))+')\n(GridSize '+' '.join(map(str, self.coef.shape))+')\n(GridSpacing '+' '.join(map(str, self.spacing))+')')
     def writeSITKfile(self,filepath,imageSize=None,imageSpacing=None):
         if type(imageSize)==type(None):
-            imageSize=self.shape
+            imageSize=self.coef.shape
         if type(imageSpacing)==type(None):
             imageSpacing=self.spacing
         with open(filepath, 'w') as f: 
