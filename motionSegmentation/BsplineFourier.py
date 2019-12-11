@@ -207,7 +207,7 @@ class Bspline:
             f.write('(InitialTransformParametersFileName "NoInitialTransform")')
             f.write('(MovingImageDimension '+str(len(self.origin))+'.000000)')
             f.write('(MovingInternalImagePixelType "float")')
-            f.write('(NumberOfParameters '+str(len(self.coef.size))+'.000000)')
+            f.write('(NumberOfParameters '+str(self.coef.size)+'.000000)')
             f.write('(Origin 0.000000 0.000000 0.000000)')
             f.write('(ResampleInterpolator "FinalBSplineInterpolator")')
             f.write('(Resampler "DefaultResampler")')
