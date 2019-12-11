@@ -27,6 +27,8 @@ Author: w.x.chan@gmail.com         18Nov2019           - v2.4.2
                                                              -added __call__(self,t) to evaluate FourierSeries
 Author: w.x.chan@gmail.com         18Nov2019           - v2.4.4
                                                              -changed to logging
+Author: w.x.chan@gmail.com         12Dec2019           - v2.4.6
+                                                             -debug writeBspline
 Requirements:
     autoD
     numpy
@@ -38,7 +40,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.4'
+_version='2.4.6'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -970,7 +972,7 @@ class BsplineFourier(Bspline):
         b=Bspline(coefFile=coef,timeMap=[refTime,time],spacing=self.spacing[:-1].copy(),origin=self.origin[:-1].copy())
         return b
     def writeBspline(self,time,filepath,refTime=float('nan'),imageSize=None,imageSpacing=None):
-        b=getBspline(time,refTime=refTime)
+        b=self.getBspline(time,refTime=refTime)
         b.writeSITKfile(filepath,imageSize=imageSize,imageSpacing=imageSpacing)
     '''
     Function to change data
