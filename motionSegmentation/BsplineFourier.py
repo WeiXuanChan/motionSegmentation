@@ -962,6 +962,9 @@ class BsplineFourier(Bspline):
         '''
         if type(time) in [int,float]:
             time=[None,time]
+        noneSlice=[]
+        for n in range(self.coef.shape[-1]):
+            noneSlice.append(slice(None))
         coef=self.coef[tuple(noneSlice+[0])].copy()
         for m in range(int(self.coef.shape[self.coef.shape[-1]]/2)):#get T matrix
             coef+=self.coef[tuple(noneSlice+[m+1])]*np.cos((m+1.)*2.*np.pi/self.spacing[self.coef.shape[-1]]*(time[1]-self.origin[self.coef.shape[-1]]))+self.coef[tuple(noneSlice+[int(self.coef.shape[self.coef.shape[-1]]/2)+m+1])]*np.sin((m+1.)*2.*np.pi/self.spacing[self.coef.shape[-1]]*(time[1]-self.origin[self.coef.shape[-1]]))
