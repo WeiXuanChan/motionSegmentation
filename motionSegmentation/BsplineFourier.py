@@ -29,6 +29,8 @@ Author: w.x.chan@gmail.com         18Nov2019           - v2.4.4
                                                              -changed to logging
 Author: w.x.chan@gmail.com         12Dec2019           - v2.4.6
                                                              -debug writeBspline
+Author: w.x.chan@gmail.com         13Dec2019           - v2.4.7
+                                                             -debug imageVectorAD
 Requirements:
     autoD
     numpy
@@ -40,7 +42,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.6'
+_version='2.4.7'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -2272,8 +2274,8 @@ class imageVectorAD(ad.AD):
         self.name=name
         self.variableIdentifier=variableIdentifier
         self.bSpline=bSpline
-        self.imageSize=imageSize
-        self.imageSpacing=imageSpacing
+        self.imageSize=np.array(imageSize).astype(int)[::-1]
+        self.imageSpacing=np.array(imageSpacing)[::-1]
         self.twoD=len(imageSpacing)
         self.accuracy=accuracy
         self.dependent=[name+variableIdentifier,'x'+variableIdentifier,'y'+variableIdentifier,'z'+variableIdentifier,'t'+variableIdentifier]
@@ -2321,7 +2323,7 @@ class imageVectorAD(ad.AD):
         if 'storedImage' not in x:
             x['storedImage']={}
         elif self.name+self.variableIdentifier+'d'+dkey in x['storedImage']:
-            return x['storedImage'][self.name+self.variableIdentifier+'d'+dkey].copy()
+            return x['storedImage'][self.name+self.variableIdentifier+'d'+dkey].copy().T
         coef=self.bSpline.coef[...,self.axis].copy()
         if len(coef.shape)>self.twoD:
             if dxyzt[-1]%4==0:
@@ -2375,6 +2377,6 @@ class imageVectorAD(ad.AD):
             else:
                 resultImage[tuple(imgslice)]+=bspread*coef[tuple(gridIndex[n])]
         x['storedImage'][self.name+self.variableIdentifier+'d'+dkey]=resultImage.copy()
-        return resultImage
+        return resultImage.T
         
                         
