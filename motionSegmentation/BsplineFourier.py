@@ -2196,12 +2196,12 @@ class BspreadArray():
   def __new__(cls, *args, **kwargs):
       return super().__new__(cls)
   def __init__(self,imageSize,imageSpacing,gridSpacing,accuracy=1):
-      self.imageSize=imageSize
+      self.imageSize=np.array(imageSize).astype(int)
       self.accuracy=int(accuracy)
-      self.twoD=len(imageSpacing)
-      self.spacing=imageSpacing/self.accuracy
+      self.twoD=len(imageSize)
+      self.spacing=np.array(imageSpacing)/self.accuracy
       self.numPerGrid=gridSpacing/self.spacing
-      self.origin=np.ceil(self.numPerGrid*2+self.accuracy,dtype=int)
+      self.origin=np.ceil(self.numPerGrid*2+self.accuracy).astype(int)
       self.data={}
   def getbspread(self,nodeImageCoord,key):
         #imageSize=None,spacing=None,scaleFromGrid=None,tVal=None,coefFourierWeight=None,vec=None,dxyzt=None,accuracy=1):
@@ -2222,7 +2222,7 @@ class BspreadArray():
         Note: origin is conserved
         '''
         if key[0]!='d':
-            raise Exception('key error.')
+            raise Exception('key error.',key)
         elif key in self.data:
             bspread=self.data[key].copy()
         else:
@@ -2238,6 +2238,7 @@ class BspreadArray():
                 gridList.append(range(self.origin[n]*2))
             bcoord=(np.array(np.meshgrid(*gridList)).T-self.origin)/self.numPerGrid+2
             uvw=np.remainder(bcoord,1.)
+            bcoord[bcoord<0]=-1
             k=3-bcoord.astype(int)
             for axis in range(self.twoD):
                 for kn in range(0,4):
@@ -2247,6 +2248,9 @@ class BspreadArray():
                         bspread[setIndex]=B[kn]({'b':validuvw},{'b':dxyz[0]})
                     else:
                         bspread[setIndex]*=B[kn]({'b':validuvw},{'b':dxyz[axis]})
+                for kn in [-1,4]:
+                    setIndex=(k[...,axis]==kn)
+                    bspread[setIndex]*=0
             self.data[key]=bspread.copy()
         imgIndex=np.around(nodeImageCoord).astype(int)
         adjust=np.around((nodeImageCoord-imgIndex)*self.accuracy).astype(int)
@@ -2258,8 +2262,8 @@ class BspreadArray():
         if np.any((maxget-minget)<=0):
             return None
         for n in range(self.twoD):
-            bspreadsliceList.append(slice(self.origin+minget[n]*self.accuracy,self.origin+maxget[n]*self.accuracy,self.accuracy))
-            imgsliceList.append(slice(imgIndex+minget[n],imgIndex+maxget[n]))
+            bspreadsliceList.append(slice(self.origin[n]+minget[n]*self.accuracy,self.origin[n]+maxget[n]*self.accuracy,self.accuracy))
+            imgsliceList.append(slice(imgIndex[n]+minget[n],imgIndex[n]+maxget[n]))
         return (bspread[tuple(bspreadsliceList)],imgsliceList)
 class imageVectorAD(ad.AD):
     def __new__(cls, *args, **kwargs):
@@ -2290,7 +2294,7 @@ class imageVectorAD(ad.AD):
                     self.debugPrint(x,dOrder,0.)
                     return 0.
         if 'bspread' not in x:
-            x['bspread']=BspreadArray(imageSize=self.imageSize,imageSpacing=self.imageSpacing,gridSpacing=self.gridSpacing,accuracy=self.accuracy)
+            x['bspread']=BspreadArray(imageSize=self.imageSize,imageSpacing=self.imageSpacing,gridSpacing=self.bSpline.spacing[:self.twoD],accuracy=self.accuracy)
         tVal=None
         if 't'+self.variableIdentifier in x:
             tVal=x['t'+self.variableIdentifier]
@@ -2300,24 +2304,24 @@ class imageVectorAD(ad.AD):
         dkey=''
         axis=['x','y','z']
         for n in range(self.twoD):
-            if axis[n]+variableIdentifier in dOrder:
-                dxyzt.append(dOrder[axis[n]+variableIdentifier])
-                dkey+=str(dOrder[axis[n]+variableIdentifier])
+            if axis[n]+self.variableIdentifier in dOrder:
+                dxyzt.append(dOrder[axis[n]+self.variableIdentifier])
+                dkey+=str(dOrder[axis[n]+self.variableIdentifier])
             else:
                 dxyzt.append(0)
                 dkey+='0'
         if np.any(np.array(dxyzt)>3):
             return 0
-        if 't'+variableIdentifier in dOrder:
-            dxyzt.append(dOrder['t'+variableIdentifier])
-            dkey+=str(dOrder['t'+variableIdentifier])
+        if 't'+self.variableIdentifier in dOrder:
+            dxyzt.append(dOrder['t'+self.variableIdentifier])
+            dkey+=str(dOrder['t'+self.variableIdentifier])
         else:
             dxyzt.append(0)
             dkey+='0'
         if 'storedImage' not in x:
             x['storedImage']={}
-        elif self.name+variableIdentifier+'d'+dkey in x['storedImage']:
-            return x['storedImage'][self.name+variableIdentifier+'d'+dkey].copy()
+        elif self.name+self.variableIdentifier+'d'+dkey in x['storedImage']:
+            return x['storedImage'][self.name+self.variableIdentifier+'d'+dkey].copy()
         coef=self.bSpline.coef[...,self.axis].copy()
         if len(coef.shape)>self.twoD:
             if dxyzt[-1]%4==0:
@@ -2348,28 +2352,29 @@ class imageVectorAD(ad.AD):
             if dxyzt[-1]>0:
                 return 0
         gridList=[]
-        for n in range(len(self.twoD)):
+        for n in range(self.twoD):
             gridList.append(range(self.bSpline.coef.shape[n]))
         gridIndex=np.array(np.meshgrid(*gridList)).T.astype(int)
         gridCoord=(gridIndex*self.bSpline.spacing[:self.twoD]+self.bSpline.origin[:self.twoD])/self.imageSpacing
         gridCoordshape=gridCoord.shape
-        gridCoord.reshape((-1,gridCoord.shape[-1]))
-        gridIndex.reshape((-1,gridIndex.shape[-1]))
         
+        gridCoord=gridCoord.reshape((-1,gridCoord.shape[-1]))
+        gridIndex=gridIndex.reshape((-1,gridIndex.shape[-1]))
+
         if len(coef.shape)>self.twoD:
             resultImage=np.zeros((*self.imageSize,*coef[self.twoD:]))
         else:
             resultImage=np.zeros(self.imageSize)
         for n in range(len(gridCoord)):
-            bspread=x['bspread'].getbspread(self,gridCoord[n],dkey[1:-1])
+            bspread=x['bspread'].getbspread(gridCoord[n],'d'+dkey[:-1])
             if type(bspread)==type(None):
                 continue
             bspread,imgslice=bspread
             if len(coef.shape)>self.twoD:
-                resultImage[tuple(imgslice)]=bspread.reshape((*bspread.shape,*np.ones(len(coef[tuple(gridIndex[n])].shape),dtype=int)))*coef[tuple(gridIndex[n])].reshape((*np.ones(len(bspread.shape),dtype=int)),*coef[tuple(gridIndex[n])].shape)
+                resultImage[tuple(imgslice)]+=bspread.reshape((*bspread.shape,*np.ones(len(coef[tuple(gridIndex[n])].shape),dtype=int)))*coef[tuple(gridIndex[n])].reshape((*np.ones(len(bspread.shape),dtype=int)),*coef[tuple(gridIndex[n])].shape)
             else:
-                resultImage[tuple(imgslice)]=bspread*coef[tuple(gridIndex[n])]
-        x['storedImage'][self.name+variableIdentifier+'d'+dkey]=resultImage.copy()
+                resultImage[tuple(imgslice)]+=bspread*coef[tuple(gridIndex[n])]
+        x['storedImage'][self.name+self.variableIdentifier+'d'+dkey]=resultImage.copy()
         return resultImage
         
                         
