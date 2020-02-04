@@ -29,12 +29,6 @@ import medImgProc as mip
 import medImgProc.processFunc as pf
 import medImgProc.pointSpeckleProc as psp
 
-
-try:
-    import SimpleITK as sitk
-except:
-    pass
-
 def NCC(array1,array2,zero=False):
     std1=np.std(array1)
     std2=np.std(array2)
