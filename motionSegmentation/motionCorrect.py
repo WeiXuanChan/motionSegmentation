@@ -328,7 +328,7 @@ def motionCorrect_syncNonRigid(savePath,case,maskslice,focusSlice,guessPeriod,si
             if np.all(fullperiod==np.loadtxt(savePath+'/'+case+'/transform/interCyclefullperiod.txt').astype(int)):
                 runImgReg=False
         if runImgReg:
-            newImg=cyclicNonRigidCorrection(fullperiod,newImg,np.mean(size)*bgridFactor*4.*np.ones(len(size)),nonRigidSavePath=savePath+'/'+case,bgridFactor=bgridFactor,inverse=True,returnSyncPhase=False)
+            newImg=pf.cyclicNonRigidCorrection(fullperiod,newImg,np.mean(size)*bgridFactor*4.*np.ones(len(size)),nonRigidSavePath=savePath+'/'+case,bgridFactor=bgridFactor,inverse=True,returnSyncPhase=False)
             np.savetxt(savePath+'/'+case+'/transform/interCyclefullperiod.txt',fullperiod)
     else:
         newImg=None
@@ -444,7 +444,7 @@ def motionCorrect_intraCycleCompound(savePath,case,maskslice,focusSlice,size,non
         if np.all(fullperiod==np.loadtxt(savePath+'/'+case+'/transform/intraCyclefullperiod.txt').astype(int)):
             runImgReg=False
     if runImgReg:
-        nonRigidRegistration(savePath+'/'+case,img2.data[fullperiod[:,0]],np.mean(size)*bgridFactor*np.ones(len(size)),full=False)
+        pf.nonRigidRegistration(savePath+'/'+case,img2.data[fullperiod[:,0]],np.mean(size)*bgridFactor*np.ones(len(size)),full=False)
         np.savetxt(savePath+'/'+case+'/transform/intraCyclefullperiod.txt',fullperiod)
         
     img55=img5.clone()
