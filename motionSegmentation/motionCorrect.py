@@ -8,7 +8,8 @@ History:
   
 Requirements:
     numpy
-    pickle (optional)
+    scipy
+    medImgProc
 Known Bug:
     None
 All rights reserved.
