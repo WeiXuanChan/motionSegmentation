@@ -2,15 +2,15 @@ from setuptools import setup
 setup(
   name = 'motionSegmentation',         # How you named your package folder (MyLib)
   packages = ['motionSegmentation'],   # Chose the same as "name"
-  version = '2.4.7',      # Start with a small number and increase it with every change you make
+  version = '2.5.0',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Explicit spatio-temporal regularization of motion tracking.',   # Give a short description about your library
   author = 'Wei Xuan Chan',                   # Type in your name
   author_email = 'w.x.chan1986@gmail.com',      # Type in your E-Mail
   url = 'https://github.com/WeiXuanChan/motionSegmentation',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/WeiXuanChan/motionSegmentation/archive/v2.4.7.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/WeiXuanChan/motionSegmentation/archive/v2.5.0.tar.gz',    # I explain this later on
   keywords = ['explicit', 'motion', 'regularization'],   # Keywords that define your package best
-  install_requires=['numpy','autoD','scipy','trimesh'],
+  install_requires=['numpy','autoD','scipy','trimesh','medImgProc'],
   classifiers=[
     'Development Status :: 5 - Production/Stable',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package    
     'Intended Audience :: Developers',      # Define that your audience are developers
