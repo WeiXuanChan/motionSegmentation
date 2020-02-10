@@ -31,6 +31,8 @@ Author: w.x.chan@gmail.com         12Dec2019           - v2.4.6
                                                              -debug writeBspline
 Author: w.x.chan@gmail.com         13Dec2019           - v2.4.7
                                                              -debug imageVectorAD
+Author: w.x.chan@gmail.com         10FEB2020           - v2.5.4
+                                                             -debug writeSITKfile
 Requirements:
     autoD
     numpy
@@ -42,7 +44,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.7'
+_version='2.5.4'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -188,7 +190,7 @@ class Bspline:
     def writeSITKfile(self,filepath,imageSize=None,imageSpacing=None):
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         if type(imageSize)==type(None):
-            imageSize=self.coef.shape
+            imageSize=self.coef.shape[:-1]
         if type(imageSpacing)==type(None):
             imageSpacing=self.spacing
         direction=np.eye(self.coef.shape[-1]).reshape(-1)
@@ -204,7 +206,7 @@ class Bspline:
             f.write('(GridDirection '+' '.join('{0:.6f}'.format(x) for x in direction)+')\n')
             f.write('(GridIndex '+' '.join('{0:.6f}'.format(x) for x in imageOrigin)+')\n')
             f.write('(GridOrigin '+' '.join('{0:.6f}'.format(x) for x in self.origin)+')\n')
-            f.write('(GridSize '+' '.join('{0:.6f}'.format(x) for x in self.coef.shape)+')\n')
+            f.write('(GridSize '+' '.join('{0:.6f}'.format(x) for x in self.coef.shape[:-1])+')\n')
             f.write('(GridSpacing '+' '.join('{0:.6f}'.format(x) for x in self.spacing)+')\n')
             f.write('(HowToCombineTransforms "Compose")\n')
             f.write('(Index '+' '.join('{0:.6f}'.format(x) for x in imageOrigin)+')\n')
