@@ -5,6 +5,9 @@ History:
     Date    Programmer SAR# - Description
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         04FEB2020           - Created
+          w.x.chan@gmail.com         10FEB2020           - v2.5.2
+                                                             -added check() for initSnakeStack
+                                                             -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
 
 Requirements:
     numpy
@@ -63,11 +66,11 @@ def getInnerOuterMeanDiff(addBinary,image,oldsnake):
     mean_ones=ones_value/ones_size
     mean_zeros=zeros_value/zeros_size
     I=image[addBinary]
-    return ((I-mean_zeros)**2.-(I-mean_ones)**2.)/(image.max()-image.min())**2.
+    return ((I-mean_zeros)**2.-(I-mean_ones)**2.)/max(1,mean_zeros-mean_ones)**2.
 class Simplified_Mumford_Shah_driver:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
-    def __init__(self,snakeStackClass=None,curvatureTerm_coef=10.,curvatureSigmas=5,meanTerm_coef=10.,expTerm_coef=1.):
+    def __init__(self,snakeStackClass=None,curvatureTerm_coef=20.,curvatureSigmas=5,meanTerm_coef=100.,expTerm_coef=1.):
         self.curvatureTerm_coef=curvatureTerm_coef  #+ve
         self.curvatureSigmas=curvatureSigmas
         self.meanTerm_coef=meanTerm_coef  #+ve
@@ -262,12 +265,20 @@ class SnakeStack:
                     if type(recorderList)!=type(None):
                         recorderList.append(self.getBinarysnake(True).snake.copy())
     def getsnake(self):
-        result=Snake(snakesInit=np.zeros(self.shape),border_value=0)
+        border_value=0
+        for n in range(len(self.snakes)):
+            if self.snakes[n].border_value==1:
+                border_value=1
+        result=Snake(snakesInit=np.zeros(self.shape),border_value=border_value)
         for n in range(len(self.snakes)):
             result+=self.snakes[n]()
         return result
     def getBinarysnake(self,smoothing=False):
-        result=Snake(snakesInit=np.zeros(self.shape),border_value=0)
+        border_value=0
+        for n in range(len(self.snakes)):
+            if self.snakes[n].border_value==1:
+                border_value=1
+        result=Snake(snakesInit=np.zeros(self.shape),border_value=border_value)
         for n in range(len(self.snakes)):
             result+=self.snakes[n].getBinary(smoothing=smoothing)
         return result
@@ -295,6 +306,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
         initSnake.append(Snake(imageArray,initArray_temp.copy(),driver=driver))
     resultSnakeStack=SnakeStack(initSnake)
     driver.snakeStackClass=resultSnakeStack
+    resultSnakeStack.check()
     return resultSnakeStack
     
         
