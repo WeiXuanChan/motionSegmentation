@@ -5,7 +5,7 @@ History:
     Date    Programmer SAR# - Description
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         04FEB2020           - Created
-          w.x.chan@gmail.com         10FEB2020           - v2.5.2
+          w.x.chan@gmail.com         10FEB2020           - v2.5.3
                                                              -added check() for initSnakeStack
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
 
@@ -15,7 +15,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.0'
+_version='2.5.3'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ def getInnerOuterMeanDiff(addBinary,image,oldsnake):
 class Simplified_Mumford_Shah_driver:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
-    def __init__(self,snakeStackClass=None,curvatureTerm_coef=20.,curvatureSigmas=5,meanTerm_coef=100.,expTerm_coef=1.):
+    def __init__(self,snakeStackClass=None,curvatureTerm_coef=1.,curvatureSigmas=5,meanTerm_coef=5.,expTerm_coef=1.):
         self.curvatureTerm_coef=curvatureTerm_coef  #+ve
         self.curvatureSigmas=curvatureSigmas
         self.meanTerm_coef=meanTerm_coef  #+ve
