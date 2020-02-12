@@ -8,7 +8,7 @@ History:
           w.x.chan@gmail.com         10FEB2020           - v2.5.3
                                                              -added check() for initSnakeStack
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
-          w.x.chan@gmail.com         10FEB2020           - v2.5.5
+          w.x.chan@gmail.com         10FEB2020           - v2.5.6
                                                              -added snake with multiple initial pixel for initSnakeStack
 Requirements:
     numpy
@@ -16,7 +16,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.5'
+_version='2.5.6'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -306,7 +306,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
                     initArray_temp[tuple(sliceList)]=0
                 else:
                     initArray_temp=np.zeros(imageArray.shape)
-                    initArray_temp[tuple(snakeInitCoordList[n])]=1
+                    initArray_temp[tuple(snakeInitCoordList[n][m])]=1
                 initArray+=initArray_temp
             initArray=np.minimum(initArray,1)
         else:
