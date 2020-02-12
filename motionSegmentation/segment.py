@@ -8,14 +8,15 @@ History:
           w.x.chan@gmail.com         10FEB2020           - v2.5.3
                                                              -added check() for initSnakeStack
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
-
+          w.x.chan@gmail.com         10FEB2020           - v2.5.4
+                                                             -added snake with multiple initial pixel for initSnakeStack
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.3'
+_version='2.5.4'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -296,14 +297,27 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
     if driver is None:
         driver=Simplified_Mumford_Shah_driver()
     for n in range(len(snakeInitCoordList)):
-        if np.all(snakeInitCoordList[n]==0):
-            initArray_temp=np.ones(imageArray.shape)
-            sliceList=[slice(1,-1)]*len(imageArray.shape)
-            initArray_temp[tuple(sliceList)]=0
+        if len(snakeInitCoordList[n].shape)>1:
+            initArray=np.zeros(imageArray.shape)
+            for m in range(len(snakeInitCoordList[n])):
+                if np.all(snakeInitCoordList[n][m]==0):
+                    initArray_temp=np.ones(imageArray.shape)
+                    sliceList=[slice(1,-1)]*len(imageArray.shape)
+                    initArray_temp[tuple(sliceList)]=0
+                else:
+                    initArray_temp=np.zeros(imageArray.shape)
+                    initArray_temp[tuple(snakeInitCoordList[n])]=1
+                initArray+=initArray_temp
+            initArray=np.minimum(initArray,1)
         else:
-            initArray_temp=np.zeros(imageArray.shape)
-            initArray_temp[tuple(snakeInitCoordList[n])]=1
-        initSnake.append(Snake(imageArray,initArray_temp.copy(),driver=driver))
+            if np.all(snakeInitCoordList[n]==0):
+                initArray=np.ones(imageArray.shape)
+                sliceList=[slice(1,-1)]*len(imageArray.shape)
+                initArray[tuple(sliceList)]=0
+            else:
+                initArray=np.zeros(imageArray.shape)
+                initArray[tuple(snakeInitCoordList[n])]=1
+        initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
     resultSnakeStack=SnakeStack(initSnake)
     driver.snakeStackClass=resultSnakeStack
     resultSnakeStack.check()
