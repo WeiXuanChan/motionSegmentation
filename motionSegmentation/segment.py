@@ -8,15 +8,15 @@ History:
           w.x.chan@gmail.com         10FEB2020           - v2.5.3
                                                              -added check() for initSnakeStack
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
-          w.x.chan@gmail.com         10FEB2020           - v2.5.6
-                                                             -added snake with multiple initial pixel for initSnakeStack
+          w.x.chan@gmail.com         10FEB2020           - v2.5.7
+                                                             -added snake with multiple initial pixel for initSnakeStack and add size of init 
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.6'
+_version='2.5.7'
 import logging
 logger = logging.getLogger(__name__)
 
