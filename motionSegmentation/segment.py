@@ -292,7 +292,7 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1):
     initSnake=[]
     if driver is None:
         driver=Simplified_Mumford_Shah_driver()
@@ -304,9 +304,13 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
                     initArray_temp=np.ones(imageArray.shape)
                     sliceList=[slice(1,-1)]*len(imageArray.shape)
                     initArray_temp[tuple(sliceList)]=0
+                    if initSize>1:
+                        initArray_temp=morphology.binary_dilation(initArray_temp,iterations=initSize-1,border_value=1).astype(float)
                 else:
                     initArray_temp=np.zeros(imageArray.shape)
                     initArray_temp[tuple(snakeInitCoordList[n][m])]=1
+                    if initSize>1:
+                        initArray_temp=morphology.binary_dilation(initArray_temp,iterations=initSize-1,border_value=0).astype(float)
                 initArray+=initArray_temp
             initArray=np.minimum(initArray,1)
         else:
@@ -314,9 +318,13 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None):
                 initArray=np.ones(imageArray.shape)
                 sliceList=[slice(1,-1)]*len(imageArray.shape)
                 initArray[tuple(sliceList)]=0
+                if initSize>1:
+                    initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=1).astype(float)
             else:
                 initArray=np.zeros(imageArray.shape)
                 initArray[tuple(snakeInitCoordList[n])]=1
+                if initSize>1:
+                    initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=0).astype(float)
         initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
     resultSnakeStack=SnakeStack(initSnake)
     driver.snakeStackClass=resultSnakeStack
