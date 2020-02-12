@@ -262,7 +262,7 @@ class SnakeStack:
                 if nDialate%smoothingCycle==(smoothingCycle-1):
                     for n in range(len(self.snakes)):
                         smoothedSnake=self.snakes[n].getBinary(smoothing=smoothingSigma)
-                        self.snakes[n]+=smoothedSnake+self.snakes[n].snakeInit
+                        self.snakes[n]+=smoothedSnake
                     if type(recorderList)!=type(None):
                         recorderList.append(self.getBinarysnake(True).snake.copy())
     def getsnake(self):
