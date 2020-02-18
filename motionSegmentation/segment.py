@@ -10,15 +10,16 @@ History:
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
           w.x.chan@gmail.com         10FEB2020           - v2.5.7
                                                              -added snake with multiple initial pixel for initSnakeStack and add size of init 
-          w.x.chan@gmail.com         10FEB2020           - v2.5.9
+          w.x.chan@gmail.com         18FEB2020           - v2.5.10
                                                              -in Snake class, added setBorderValue
+                                                             -in initSnakeStack, remove border_value=1 snake from dialating
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.9'
+_version='2.5.10'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -311,8 +312,6 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1):
                     initArray_temp=np.ones(imageArray.shape)
                     sliceList=[slice(1,-1)]*len(imageArray.shape)
                     initArray_temp[tuple(sliceList)]=0
-                    if initSize>1:
-                        initArray_temp=morphology.binary_dilation(initArray_temp,iterations=initSize-1,border_value=1).astype(float)
                 else:
                     initArray_temp=np.zeros(imageArray.shape)
                     initArray_temp[tuple(snakeInitCoordList[n][m])]=1
@@ -325,8 +324,6 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1):
                 initArray=np.ones(imageArray.shape)
                 sliceList=[slice(1,-1)]*len(imageArray.shape)
                 initArray[tuple(sliceList)]=0
-                if initSize>1:
-                    initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=1).astype(float)
             else:
                 initArray=np.zeros(imageArray.shape)
                 initArray[tuple(snakeInitCoordList[n])]=1
