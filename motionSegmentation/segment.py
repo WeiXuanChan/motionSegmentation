@@ -10,6 +10,8 @@ History:
                                                              -added border_value determination for SnakeStack.getSnake() and .getBinarySnake()
           w.x.chan@gmail.com         10FEB2020           - v2.5.7
                                                              -added snake with multiple initial pixel for initSnakeStack and add size of init 
+          w.x.chan@gmail.com         10FEB2020           - v2.5.8
+                                                             -in Snake class, added setBorderValue
 Requirements:
     numpy
 Known Bug:
@@ -104,16 +106,17 @@ class Snake:
         min_nonIntersecti s the number of diallation from merging 2 snakes
         '''
         self.ID=ID
+        self.border_value=border_value
+        self.imageArray=imageArray
         if type(snakesInit)!=type(None):
             self.snakeInit=snakesInit.copy()
             self.snake=snakesInit.copy()
+            if self.border_value is None:
+                self.border_value=int(bool(self.snake[tuple([0]*len(self.snake.shape))]))
         else:
             self.snakeInit=None
             self.snake=None
-        self.imageArray=imageArray
         self.driver=driver
-        self.border=None
-        self.border_value=border_value
     def setImage(self,imageArray):
         self.imageArray=imageArray
     def check(self):
@@ -125,10 +128,15 @@ class Snake:
             self.driver=none_driver()
         if self.border_value is None:
             self.border_value=int(bool(self.snake[tuple([0]*len(self.snake.shape))]))
-        self.border=np.zeros(self.snake.shape,dtype=bool)
-        for n in range(len(self.snake.shape)):
-            self.border[tuple([slice(None)]*n+[0])]=True
-            self.border[tuple([slice(None)]*n+[self.snake.shape[n]-1])]=True
+    def setBorderValue(self,value=None):
+        if value is None:
+            value=self.border_value
+        if value is None:
+            logger.warning('No Border value set in Snake '+repr(self.ID))
+        else:
+            for n in range(len(self.snake.shape)):
+                self.snake[tuple([slice(None)]*n+[0])]=value
+                self.snake[tuple([slice(None)]*n+[self.snake.shape[n]-1])]=value
     def getBinary(self,smoothing=False):
         binarySnake=self.snake.copy()
         binarySnake[binarySnake<1]=0
@@ -188,10 +196,6 @@ class Snake:
             newSnake.imageArray=self.imageArray.copy()
         newSnake.driver=self.driver
         newSnake.border_value=self.border_value
-        if self.border is None:
-            newSnake.border=None
-        else:
-            newSnake.border=self.border.copy()
         return newSnake
     def __add__(self,array):
         result=self.clone()
@@ -199,8 +203,7 @@ class Snake:
             result.snake=np.minimum(1,np.maximum(0,result.snake+array))
         else:
             result.snake=np.minimum(1,np.maximum(0,result.snake+array.snake))
-        if type(result.border)!=type(None):
-            result.snake[result.border]=result.border_value
+        result.setBorderValue()
         return result
     def reset(self):
         self.snake=self.snakeInit.copy()
