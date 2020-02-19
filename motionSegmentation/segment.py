@@ -325,11 +325,19 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=False):
-    if setSnakeBlocks:
-        padAxis=[[1,1]]
-        for n in range(1,len(imageArray.shape)):
-            padAxis.append([0,0])
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=None):
+    if setSnakeBlocks is not None:
+        if setSnakeBlocks is True:
+            setSnakeBlocks=0
+        if isinstance(setSnakeBlocks,int):
+            padAxis=[]
+            for n in range(len(imageArray.shape)):
+                if n==setSnakeBlocks:
+                    padAxis.append([1,1])
+                else:
+                    padAxis.append([0,0])
+        else:
+            padAxis=setSnakeBlocks
         onesArray=np.zeros(imageArray.shape,dtype=bool)
         zerosArray=np.zeros(imageArray.shape,dtype=bool)
         imageArray=np.pad(imageArray,padAxis,constant_values=imageArray.mean())
