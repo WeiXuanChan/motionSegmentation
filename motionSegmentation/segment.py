@@ -12,14 +12,17 @@ History:
                                                              -added snake with multiple initial pixel for initSnakeStack and add size of init 
           w.x.chan@gmail.com         18FEB2020           - v2.5.10
                                                              -in Snake class, added setBorderValue
-                                                             -in initSnakeStack, remove border_value=1 snake from dialating
+                                                             -in initSnakeStack, remove border_value=1 snake from dialating 
+          w.x.chan@gmail.com         19FEB2020           - v2.6.0
+                                                             -in Snake class and initSnakeStack, added inner_outer_flexi_pixels and setSnakeBlock
+                                                             
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.10'
+_version='2.6.0'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -224,12 +227,14 @@ class Snake:
 class SnakeStack:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
-    def __init__(self,snakesInitList=None,min_nonIntersect=5):
+    def __init__(self,snakesInitList=None,min_nonIntersect=5,inner_outer_flexi_pixels=None):
         '''
         Initialize all data.
         Algorithm will expand True
         min_nonIntersecti s the number of diallation from merging 2 snakes
+        inner_outer_flexi_pixels=[np.ndarray,np.ndarray], with mean_zeros and mean_ones updated before every iteration
         '''
+        self.inner_outer_flexi_pixels=inner_outer_flexi_pixels
         self.min_nonIntersect=int(min_nonIntersect)
         if snakesInitList is None:
             self.snakes=[]
@@ -245,8 +250,23 @@ class SnakeStack:
             self.snakes[n].check()
             if np.any(self.shape!=self.snakes[n].imageArray.shape):
                 raise Exception('Snake '+str(n)+' image '+str(self.snakes[n].imageArray.shape)+'is of different shape '+str(self.shape))
+    def update_flexi_pixels(self):
+        if type(self.inner_outer_flexi_pixels)!=type(None):
+            oldsnake=self.getsnake().snake
+            ones_size=np.sum(oldsnake)
+            zeros_size=oldsnake.size-ones_size
+            for sn in self.snakes:
+                ones_value=np.sum(sn.imageArray*oldsnake)
+                zeros_value=np.sum(sn.imageArray)-ones_value
+                mean_ones=ones_value/ones_size
+                mean_zeros=zeros_value/zeros_size
+                if type(self.inner_outer_flexi_pixels[0])!=type(None):
+                    sn.imageArray[self.inner_outer_flexi_pixels[0]]=mean_zeros
+                if type(self.inner_outer_flexi_pixels[1])!=type(None):
+                    sn.imageArray[self.inner_outer_flexi_pixels[1]]=mean_ones
     def dialate(self,numOfTimes=1,smoothingCycle=10,smoothingSigma=True,recorderList=None):
         for nDialate in range(numOfTimes):
+            self.update_flexi_pixels()
             snake_incr=[]
             for n in range(len(self.snakes)):
                 snake_incr.append(self.snakes[n].getDialate())
@@ -300,7 +320,19 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1):
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=False):
+    if setSnakeBlocks:
+        padAxis=[[1,1]]
+        for n in range(1,len(imageArray.shape)):
+            padAxis.append([0,0])
+        onesArray=np.zeros(imageArray.shape,dtype=bool)
+        zerosArray=np.zeros(imageArray.shape,dtype=bool)
+        imageArray=np.pad(imageArray,padAxis,constant_values=imageArray.mean())
+        onesArray=np.pad(onesArray,padAxis,constant_values=False)
+        zerosArray=np.pad(zerosArray,padAxis,constant_values=True)
+        imageArray=np.pad(imageArray,1,constant_values=imageArray.min())
+        onesArray=np.pad(onesArray,1,constant_values=True)
+        zerosArray=np.pad(zerosArray,1,constant_values=False)
     initSnake=[]
     if driver is None:
         driver=Simplified_Mumford_Shah_driver()
@@ -330,7 +362,10 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1):
                 if initSize>1:
                     initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=0).astype(float)
         initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
-    resultSnakeStack=SnakeStack(initSnake)
+    if setSnakeBlocks:
+        resultSnakeStack=SnakeStack(initSnake,inner_outer_flexi_pixels=[zerosArray,onesArray])
+    else:
+        resultSnakeStack=SnakeStack(initSnake)
     driver.snakeStackClass=resultSnakeStack
     resultSnakeStack.check()
     return resultSnakeStack
