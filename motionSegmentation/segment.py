@@ -15,6 +15,7 @@ History:
                                                              -in initSnakeStack, remove border_value=1 snake from dialating 
           w.x.chan@gmail.com         19FEB2020           - v2.6.0
                                                              -in Snake class and initSnakeStack, added inner_outer_flexi_pixels and setSnakeBlock
+                                                             -in Simplified_Mumford_Shah_driver,calculate curvature only when curvatureTerm_coef != 0
                                                              
 Requirements:
     numpy
@@ -85,7 +86,11 @@ class Simplified_Mumford_Shah_driver:
         self.snakeStackClass=snakeStackClass
     def __call__(self,addBinary,image,oldsnake):
         result=np.zeros(addBinary.shape)
-        curvature=gaussianCurvature(addBinary,image,oldsnake,self.curvatureSigmas)
+        if self.curvatureTerm_coef==0:
+            curvature=0
+        else:
+            curvature=gaussianCurvature(addBinary,image,oldsnake,self.curvatureSigmas)
+            
         if type(self.snakeStackClass)==type(None):
             innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,oldsnake)
         else:
