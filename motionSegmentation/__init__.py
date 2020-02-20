@@ -90,6 +90,11 @@ Author: w.x.chan@gmail.com    18FEB2020                - v2.5.10
 						-BsplineFourier version 2.4.7
 						-motionCorrect version 2.4.7
 						-segment verion 2.5.10
+Author: w.x.chan@gmail.com    20FEB2020                - v2.6.0
+						-bfSolver version 2.5.4
+						-BsplineFourier version 2.4.7
+						-motionCorrect version 2.4.7
+						-segment verion 2.6.0
 Requirements:
     autoD
     numpy
@@ -102,7 +107,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.5.10'
+_version='2.6.0'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
