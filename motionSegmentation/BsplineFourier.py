@@ -34,7 +34,7 @@ Author: w.x.chan@gmail.com         13Dec2019           - v2.4.7
 Author: w.x.chan@gmail.com         10FEB2020           - v2.5.4
                                                              -debug writeSITKfile
 Author: w.x.chan@gmail.com         21FEB2020           - v2.6.2
-                                                             -debug BspreadArra.getbspread , correct mgrid
+                                                             -debug BspreadArray.getbspread , correct mgrid
 Requirements:
     autoD
     numpy
