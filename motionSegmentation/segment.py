@@ -16,14 +16,15 @@ History:
           w.x.chan@gmail.com         19FEB2020           - v2.6.0
                                                              -in Snake class and initSnakeStack, added inner_outer_flexi_pixels and setSnakeBlock
                                                              -in Simplified_Mumford_Shah_driver,calculate curvature only when curvatureTerm_coef != 0
-                                                             
+          w.x.chan@gmail.com         19FEB2020           - v2.6.1  
+                                                             -in snake.getBinary, smoothing without opening first
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.6.0'
+_version='2.6.1'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -164,7 +165,7 @@ class Snake:
                     curvbinarySnake[curvature>0.5]=True
                     binarySnake+=curvbinarySnake
                     sigma*=0.5
-            binarySnake=morphology.binary_opening(binarySnake,iterations=1)
+            #binarySnake=morphology.binary_opening(binarySnake,iterations=1)
             newbinarySnake=binarySnake.copy()
             for k in range(50):
                 newbinarySnake=morphology.binary_closing(binarySnake,iterations=1)
