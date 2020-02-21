@@ -33,6 +33,8 @@ Author: w.x.chan@gmail.com         13Dec2019           - v2.4.7
                                                              -debug imageVectorAD
 Author: w.x.chan@gmail.com         10FEB2020           - v2.5.4
                                                              -debug writeSITKfile
+Author: w.x.chan@gmail.com         21FEB2020           - v2.6.2
+                                                             -debug BspreadArra.getbspread , correct mgrid
 Requirements:
     autoD
     numpy
@@ -44,7 +46,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.4'
+_version='2.6.2'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -2239,8 +2241,8 @@ class BspreadArray():
             bspread=np.zeros(self.origin*2)
             gridList=[]
             for n in range(len(self.origin)):
-                gridList.append(range(self.origin[n]*2))
-            bcoord=(np.array(np.meshgrid(*gridList)).T-self.origin)/self.numPerGrid+2
+                gridList.append(slice(self.origin[n]*2))
+            bcoord=(np.mgrid[tuple(gridList)].reshape(len(gridList),*(self.origin*2)).transpose(*tuple(range(1,len(gridList)+1)),0)-self.origin)/self.numPerGrid+2
             uvw=np.remainder(bcoord,1.)
             bcoord[bcoord<0]=-1
             k=3-bcoord.astype(int)
