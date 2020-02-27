@@ -534,10 +534,15 @@ def combineAndSyncSlices(savePath,focusSlice,guessPeriod,stackstr='',translateTo
             img.data[n]=pf.translateArray(img.data[n],transPara[n],False,0)
     imgCorrect.data=imgCorrect.data[:,(guessPeriod+1):(2*(guessPeriod+1))]
     img.data=img.data[:,(guessPeriod+1):(2*(guessPeriod+1))]
+    newfocusSlice=(slice(None),*focusSlice[1:])
+    img.data=img.data[newfocusSlice]
     imgCorrect.save(savePath+'/extractedImage'+stackstr)
     img.save(savePath+'/fullImageStack_adjusted'+stackstr)
     imgCorrect.mimwrite2D(savePath+'/FINALImage'+stackstr,axes=('h','y','x'))
-    
+    XcorWeight=imgCorrect.clone()
+    XcorWeight.data=1-np.maximum(0,np.minimum(1,XcorWeight.data/XcorWeight.data.max()/np.exp(-0.5)))
+    img.data*=XcorWeight
+    img.save(savePath+'/imgWithoutFluid'+stackstr)
 def motionCorrect(savePath,maskslice,focusSlice,guessPeriod,size,correlateSlice=None,caseRange=[],runFromStep=0,stackstr='',translateToStack=True,caseNameFormat='V{0:02d}',aviNameFormat='cropped_V{0:02d}.avi',nonCardiacMotion=True,includeRotate=False,useCorrDet=True,border=60,bgridFactor=4.,forcePeriod=False,highErrorDim=True,reduceNonRandomMode=0,dimSigmaFactor=1.,highIntensityFilter=None,lowIntensityFilter=None,finalSpread=0.001,avicheck=False):
     if type(correlateSlice)==type(None):
         correlateSlice=tuple(focusSlice)
