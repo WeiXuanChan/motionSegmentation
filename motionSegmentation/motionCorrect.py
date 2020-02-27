@@ -5,6 +5,8 @@ History:
     Date    Programmer SAR# - Description
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         04FEB2020           - Created
+  Author: w.x.chan@gmail.com         27FEB2020           - v2.6.3
+                                                            -add output of raw image without fluid space
   
 Requirements:
     numpy
@@ -14,7 +16,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.5.0'
+_version='2.6.3'
 import logging
 logger = logging.getLogger(__name__)
 
