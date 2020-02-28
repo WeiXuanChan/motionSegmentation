@@ -20,13 +20,16 @@ History:
                                                              -in snake.getBinary, smoothing without opening first
           w.x.chan@gmail.com         28FEB2020           - v2.7.4  
                                                              -added detectNonregularBoundary
+          w.x.chan@gmail.com         28FEB2020           - v2.7.5  
+                                                             -added option for initArray to detectNonregularBoundary
+                                                             - added intiBlocksAxes to initSnakeStack
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.4'
+_version='2.7.5'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -48,13 +51,16 @@ def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoot
     if blockInitAxes is not None:
         if isinstance(blockInitAxes,int):
             blockInitAxes=[blockInitAxes]
-        sliceList=[]
-        for n in range(len(boundaryArray.shape)):
-            if n in blockInitAxes:
-                sliceList.append(slice(None))
-            else:
-                sliceList.append(slice(1,-1))
-        boundaryArray[tuple(sliceList)]=0
+        if isinstance(blockInitAxes,(list,tuple)):
+            sliceList=[]
+            for n in range(len(boundaryArray.shape)):
+                if n in blockInitAxes:
+                    sliceList.append(slice(None))
+                else:
+                    sliceList.append(slice(1,-1))
+            boundaryArray[tuple(sliceList)]=0
+        elif isinstance(blockInitAxes,np.ndarray):
+            boundaryArray=blockInitAxes.copy()
     s=Snake(imageArray=imageArray,snakesInit=boundaryArray,driver=Specific_value_driver(value=outofbound_value),border_value=-1)
     pixelIncr_lastSmoothingCycle=imageArray.size
     for n in range(iterations):
@@ -381,7 +387,7 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks,intiBlocksAxes=None):
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=None,intiBlocksAxes=None):
     if setSnakeBlocks is not None:
         if setSnakeBlocks is True:
             setSnakeBlocks=0
@@ -416,6 +422,8 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
                     if intiBlocksAxes is None:
                         sliceList=[slice(1,-1)]*len(imageArray.shape)
                     else:
+                        if isinstance(intiBlocksAxes,int):
+                            intiBlocksAxes=[intiBlocksAxes]
                         sliceList=[]
                         for axis in range(len(imageArray.shape)):
                             if axis in intiBlocksAxes:
@@ -437,6 +445,8 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
                 if intiBlocksAxes is None:
                     sliceList=[slice(1,-1)]*len(imageArray.shape)
                 else:
+                    if isinstance(intiBlocksAxes,int):
+                        intiBlocksAxes=[intiBlocksAxes]
                     sliceList=[]
                     for axis in range(len(imageArray.shape)):
                         if axis in intiBlocksAxes:
