@@ -18,7 +18,7 @@ History:
                                                              -in Simplified_Mumford_Shah_driver,calculate curvature only when curvatureTerm_coef != 0
           w.x.chan@gmail.com         19FEB2020           - v2.6.1  
                                                              -in snake.getBinary, smoothing without opening first
-          w.x.chan@gmail.com         28FEB2020           - v2.7.2  
+          w.x.chan@gmail.com         28FEB2020           - v2.7.3  
                                                              -added detectNonregularBoundary
 Requirements:
     numpy
@@ -26,7 +26,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.2'
+_version='2.7.3'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,20 @@ try:
 except:
     pass
 
-def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None):
+def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None,blockinitaxes=None):
     boundaryArray=np.zeros(imageArray.shape)
     addboundaryArray=morphology.binary_dilation(boundaryArray,iterations=1,border_value=1)
     boundaryArray[np.logical_and(addboundaryArray,imageArray==outofbound_value)]=1.
+    if blockinitaxes is not None:
+        if isinstance(blockinitaxes,int):
+            blockinitaxes=[blockinitaxes]
+        sliceList=[]
+        for n in range(len(boundaryArray)):
+            if n in blockinitaxes:
+                sliceList.append(slice(None))
+            else:
+                sliceList.append(slice(1,-1))
+        boundaryArray[tuple(sliceList)]=0
     s=Snake(imageArray=imageArray,snakesInit=boundaryArray,driver=Specific_value_driver(value=outofbound_value),border_value=-1)
     pixelIncr_lastSmoothingCycle=imageArray.size
     for n in range(iterations):
