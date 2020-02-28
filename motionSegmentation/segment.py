@@ -450,7 +450,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
                 if initSize>1:
                     initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=0).astype(float)
         if isOuterSnake and (intiBlocksAxes is not None):
-            initSnake.append(Snake(imageArray,initArray.copy(),driver=driver),border_value=-1)
+            initSnake.append(Snake(imageArray,initArray.copy(),driver=driver,border_value=-1))
         else:
             initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
     if setSnakeBlocks:
