@@ -18,7 +18,7 @@ History:
                                                              -in Simplified_Mumford_Shah_driver,calculate curvature only when curvatureTerm_coef != 0
           w.x.chan@gmail.com         19FEB2020           - v2.6.1  
                                                              -in snake.getBinary, smoothing without opening first
-          w.x.chan@gmail.com         28FEB2020           - v2.7.3  
+          w.x.chan@gmail.com         28FEB2020           - v2.7.4  
                                                              -added detectNonregularBoundary
 Requirements:
     numpy
@@ -26,7 +26,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.3'
+_version='2.7.4'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoot
         if isinstance(blockinitaxes,int):
             blockinitaxes=[blockinitaxes]
         sliceList=[]
-        for n in range(len(boundaryArray)):
+        for n in range(len(boundaryArray.shape)):
             if n in blockinitaxes:
                 sliceList.append(slice(None))
             else:
