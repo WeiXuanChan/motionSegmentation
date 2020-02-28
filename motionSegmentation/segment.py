@@ -381,7 +381,7 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=None):
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks,intiBlocksAxes=None):
     if setSnakeBlocks is not None:
         if setSnakeBlocks is True:
             setSnakeBlocks=0
@@ -406,12 +406,22 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     if driver is None:
         driver=Simplified_Mumford_Shah_driver()
     for n in range(len(snakeInitCoordList)):
+        isOuterSnake=False
         if len(snakeInitCoordList[n].shape)>1:
             initArray=np.zeros(imageArray.shape)
             for m in range(len(snakeInitCoordList[n])):
                 if np.all(snakeInitCoordList[n][m]==0):
+                    isOuterSnake=True
                     initArray_temp=np.ones(imageArray.shape)
-                    sliceList=[slice(1,-1)]*len(imageArray.shape)
+                    if intiBlocksAxes is None:
+                        sliceList=[slice(1,-1)]*len(imageArray.shape)
+                    else:
+                        sliceList=[]
+                        for axis in range(len(imageArray.shape)):
+                            if axis in intiBlocksAxes:
+                                sliceList.append(slice(None))
+                            else:
+                                sliceList.append(slice(1,-1))
                     initArray_temp[tuple(sliceList)]=0
                 else:
                     initArray_temp=np.zeros(imageArray.shape)
@@ -422,15 +432,27 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
             initArray=np.minimum(initArray,1)
         else:
             if np.all(snakeInitCoordList[n]==0):
+                isOuterSnake=True
                 initArray=np.ones(imageArray.shape)
-                sliceList=[slice(1,-1)]*len(imageArray.shape)
+                if intiBlocksAxes is None:
+                    sliceList=[slice(1,-1)]*len(imageArray.shape)
+                else:
+                    sliceList=[]
+                    for axis in range(len(imageArray.shape)):
+                        if axis in intiBlocksAxes:
+                            sliceList.append(slice(None))
+                        else:
+                            sliceList.append(slice(1,-1))
                 initArray[tuple(sliceList)]=0
             else:
                 initArray=np.zeros(imageArray.shape)
                 initArray[tuple(snakeInitCoordList[n])]=1
                 if initSize>1:
                     initArray=morphology.binary_dilation(initArray,iterations=initSize-1,border_value=0).astype(float)
-        initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
+        if isOuterSnake and (intiBlocksAxes is not None):
+            initSnake.append(Snake(imageArray,initArray.copy(),driver=driver),border_value=-1)
+        else:
+            initSnake.append(Snake(imageArray,initArray.copy(),driver=driver))
     if setSnakeBlocks:
         resultSnakeStack=SnakeStack(initSnake,inner_outer_flexi_pixels=[zerosArray,onesArray])
     else:
