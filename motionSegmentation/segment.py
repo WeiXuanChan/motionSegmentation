@@ -20,7 +20,7 @@ History:
                                                              -in snake.getBinary, smoothing without opening first
           w.x.chan@gmail.com         28FEB2020           - v2.7.4  
                                                              -added detectNonregularBoundary
-          w.x.chan@gmail.com         28FEB2020           - v2.7.6 
+          w.x.chan@gmail.com         28FEB2020           - v2.7.7
                                                              -added option for initArray to detectNonregularBoundary
                                                              - added intiBlocksAxes to initSnakeStack
 Requirements:
@@ -29,7 +29,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.6'
+_version='2.7.7'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoot
                     sliceList.append(slice(1,-1))
             boundaryArray[tuple(sliceList)]=0
         elif isinstance(blockInitAxes,np.ndarray):
-            boundaryArray=[blockInitAxes.astype(bool)]=0
+            boundaryArray[blockInitAxes.astype(bool)]=0
     s=Snake(imageArray=imageArray,snakesInit=boundaryArray,driver=Specific_value_driver(value=outofbound_value),border_value=-1)
     pixelIncr_lastSmoothingCycle=imageArray.size
     for n in range(iterations):
