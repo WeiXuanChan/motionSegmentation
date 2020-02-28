@@ -51,6 +51,7 @@ def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoot
         snake_incr=s.getDialate()
         if n%smoothingCycle==0:
             if np.count_nonzero(snake_incr)>=pixelIncr_lastSmoothingCycle:
+                s+=snake_incr
                 break
             else:
                 pixelIncr_lastSmoothingCycle=np.count_nonzero(snake_incr)
