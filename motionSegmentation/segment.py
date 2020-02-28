@@ -20,7 +20,7 @@ History:
                                                              -in snake.getBinary, smoothing without opening first
           w.x.chan@gmail.com         28FEB2020           - v2.7.4  
                                                              -added detectNonregularBoundary
-          w.x.chan@gmail.com         28FEB2020           - v2.7.5  
+          w.x.chan@gmail.com         28FEB2020           - v2.7.6 
                                                              -added option for initArray to detectNonregularBoundary
                                                              - added intiBlocksAxes to initSnakeStack
 Requirements:
@@ -29,7 +29,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.5'
+_version='2.7.6'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -44,10 +44,13 @@ try:
 except:
     pass
 
-def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None,blockInitAxes=None):
-    boundaryArray=np.zeros(imageArray.shape)
-    addboundaryArray=morphology.binary_dilation(boundaryArray,iterations=1,border_value=1)
-    boundaryArray[np.logical_and(addboundaryArray,imageArray==outofbound_value)]=1.
+def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None,initArray=None,blockInitAxes=None):
+    if initArray is None:
+        boundaryArray=np.zeros(imageArray.shape)
+        addboundaryArray=morphology.binary_dilation(boundaryArray,iterations=1,border_value=1)
+        boundaryArray[np.logical_and(addboundaryArray,imageArray==outofbound_value)]=1.
+    else:
+        boundaryArray=initArray
     if blockInitAxes is not None:
         if isinstance(blockInitAxes,int):
             blockInitAxes=[blockInitAxes]
@@ -60,7 +63,7 @@ def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoot
                     sliceList.append(slice(1,-1))
             boundaryArray[tuple(sliceList)]=0
         elif isinstance(blockInitAxes,np.ndarray):
-            boundaryArray=blockInitAxes.copy()
+            boundaryArray=[blockInitAxes.astype(bool)]=0
     s=Snake(imageArray=imageArray,snakesInit=boundaryArray,driver=Specific_value_driver(value=outofbound_value),border_value=-1)
     pixelIncr_lastSmoothingCycle=imageArray.size
     for n in range(iterations):
