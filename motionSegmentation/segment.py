@@ -41,16 +41,16 @@ try:
 except:
     pass
 
-def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None,blockinitaxes=None):
+def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None,blockInitAxes=None):
     boundaryArray=np.zeros(imageArray.shape)
     addboundaryArray=morphology.binary_dilation(boundaryArray,iterations=1,border_value=1)
     boundaryArray[np.logical_and(addboundaryArray,imageArray==outofbound_value)]=1.
-    if blockinitaxes is not None:
-        if isinstance(blockinitaxes,int):
-            blockinitaxes=[blockinitaxes]
+    if blockInitAxes is not None:
+        if isinstance(blockInitAxes,int):
+            blockInitAxes=[blockInitAxes]
         sliceList=[]
         for n in range(len(boundaryArray.shape)):
-            if n in blockinitaxes:
+            if n in blockInitAxes:
                 sliceList.append(slice(None))
             else:
                 sliceList.append(slice(1,-1))
