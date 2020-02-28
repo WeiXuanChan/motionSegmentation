@@ -18,13 +18,15 @@ History:
                                                              -in Simplified_Mumford_Shah_driver,calculate curvature only when curvatureTerm_coef != 0
           w.x.chan@gmail.com         19FEB2020           - v2.6.1  
                                                              -in snake.getBinary, smoothing without opening first
+          w.x.chan@gmail.com         28FEB2020           - v2.7.0  
+                                                             -added detectNonregularBoundary
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.6.1'
+_version='2.7.0'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,32 @@ try:
     from skimage import measure
 except:
     pass
+
+def detectNonregularBoundary(imageArray,outofbound_value=0,iterations=1000,smoothingCycle=1,mergeAxes=None):
+    boundaryArray=np.zeros(imageArray.shape)
+    addboundaryArray=morphology.binary_dilation(boundaryArray,iterations=1,border_value=1)
+    boundaryArray[np.logical_and(addboundaryArray,imageArray==outofbound_value)]=1.
+    s=Snake(imageArray=imageArray,snakesInit=boundaryArray,driver=Specific_value_driver(value=outofbound_value),border_value=-1)
+    pixelIncr_lastSmoothingCycle=imageArray.size
+    for n in range(iterations):
+        snake_incr=s.getDialate()
+        if n%smoothingCycle==0:
+            if np.count_nonzero(snake_incr)>=pixelIncr_lastSmoothingCycle:
+                break
+            else:
+                pixelIncr_lastSmoothingCycle=np.count_nonzero(snake_incr)
+        logger.warning('iteration '+str(n)+' : pixel increment = '+str(np.count_nonzero(snake_incr)))
+        if np.any(snake_incr):
+            s+=snake_incr
+            if n%smoothingCycle==(smoothingCycle-1):
+                s.snake=morphology.binary_erosion(s.snake,iterations=1,border_value=1)
+                s.snake=morphology.binary_dilation(s.snake,iterations=1,border_value=0)
+        else:
+            break
+    if mergeAxes is not None:
+        result=np.prod(s.snake.astype(bool),axis=mergeAxes)
+    return np.logical_not(result)
+    
 
 def gaussianCurvature(addBinary,image,oldsnake,sigmas=3):
     #curvature from -1 to 1, low value means more cells with outer value, reduce driving force to reduce curvature
@@ -99,6 +127,21 @@ class Simplified_Mumford_Shah_driver:
             innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,totalsnakes.snake.copy())
         result[addBinary]=self.curvatureTerm_coef*curvature+self.meanTerm_coef*innerOuterMeanDiff*np.exp(innerOuterMeanDiff/np.abs(innerOuterMeanDiff)*self.expTerm_coef*curvature)
         return result
+class Specific_value_driver:
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls)
+    def __init__(self,snakeStackClass=None,value=0,include=True):
+        #if include, addbinary will be True for image pixel = value else, addbinary will be True for image pixel != value
+        self.snakeStackClass=snakeStackClass
+        self.value=value
+        self.include=include
+    def __call__(self,addBinary,image,oldsnake):
+        result=np.zeros(oldsnake.shape)
+        if self.include:
+            result[np.logical_and(addBinary,image==self.value)]=1.
+        else:
+            result[np.logical_and(addBinary,image!=self.value)]=1.
+        return result
 class none_driver:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
@@ -144,7 +187,7 @@ class Snake:
             value=self.border_value
         if value is None:
             logger.warning('No Border value set in Snake '+repr(self.ID))
-        else:
+        elif value>=0 and value<=1:
             if self.border is None:
                 self.border=np.zeros(self.snake.shape).astype(bool)
                 for n in range(len(self.snake.shape)):
@@ -223,7 +266,7 @@ class Snake:
         self.snake=self.snakeInit.copy()
     def getDialate(self,numOfDialation=1,filter_with_driver=True):
         binarySnake=self.getBinary()
-        addBinary=np.logical_xor(morphology.binary_dilation(binarySnake,iterations=numOfDialation,border_value=self.border_value),binarySnake)
+        addBinary=np.logical_xor(morphology.binary_dilation(binarySnake,iterations=numOfDialation,border_value=min(max(self.border_value,0),1)),binarySnake)
         if filter_with_driver:
             return self.driver(addBinary,self.imageArray.copy(),self.snake.copy())
         else:
