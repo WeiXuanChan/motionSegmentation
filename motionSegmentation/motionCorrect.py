@@ -7,6 +7,8 @@ History:
   Author: w.x.chan@gmail.com         04FEB2020           - Created
   Author: w.x.chan@gmail.com         27FEB2020           - v2.6.3
                                                             -add output of raw image without fluid space
+  Author: w.x.chan@gmail.com         02MAR2020           - v2.7.8
+                                                            -debug focusSlice of raw image and raw image without fluid space
   
 Requirements:
     numpy
@@ -16,7 +18,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.6.3'
+_version='2.7.8'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -536,7 +538,7 @@ def combineAndSyncSlices(savePath,focusSlice,guessPeriod,stackstr='',translateTo
             img.data[n]=pf.translateArray(img.data[n],transPara[n],False,0)
     imgCorrect.data=imgCorrect.data[:,(guessPeriod+1):(2*(guessPeriod+1))]
     img.data=img.data[:,(guessPeriod+1):(2*(guessPeriod+1))]
-    newfocusSlice=(slice(None),*focusSlice[1:])
+    newfocusSlice=(slice(None),slice(None),*focusSlice[1:])
     img.data=img.data[newfocusSlice]
     imgCorrect.save(savePath+'/extractedImage'+stackstr)
     img.save(savePath+'/fullImageStack_adjusted'+stackstr)
