@@ -23,13 +23,15 @@ History:
           w.x.chan@gmail.com         28FEB2020           - v2.7.7
                                                              -added option for initArray to detectNonregularBoundary
                                                              - added intiBlocksAxes to initSnakeStack
+          w.x.chan@gmail.com         06MAR2020           - v2.7.9
+                                                             -added mask to getInnerOuterMeanDiff, Simplified_Mumford_Shah_driver,and initSnakeStack
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.7'
+_version='2.7.9'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -116,11 +118,19 @@ def laplaceCurvature(addBinary,image,oldsnake,sigmas=1):
     curvature=gaussian_filter(oldsnake,sigmas)  
     curvature=laplace(curvature)
     return curvature[addBinary]
-def getInnerOuterMeanDiff(addBinary,image,oldsnake):
-    ones_value=np.sum(image*oldsnake)
-    ones_size=np.sum(oldsnake)
-    zeros_value=np.sum(image)-ones_value
-    zeros_size=image.size-ones_size
+def getInnerOuterMeanDiff(addBinary,image,oldsnake,mask=None):
+    if mask is None:
+        tempimage=image
+        tempoldsnake=oldsnake
+        total=image.size
+    else:
+        tempimage=image*mask
+        tempoldsnake=oldsnake*mask
+        total=np.sum(mask)
+    ones_value=np.sum(tempimage*tempoldsnake)
+    ones_size=np.sum(tempoldsnake)
+    zeros_value=np.sum(tempimage)-ones_value
+    zeros_size=total-ones_size
     mean_ones=ones_value/ones_size
     mean_zeros=zeros_value/zeros_size
     I=image[addBinary]
@@ -128,12 +138,14 @@ def getInnerOuterMeanDiff(addBinary,image,oldsnake):
 class Simplified_Mumford_Shah_driver:
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)
-    def __init__(self,snakeStackClass=None,curvatureTerm_coef=1.,curvatureSigmas=5,meanTerm_coef=5.,expTerm_coef=1.):
+    def __init__(self,snakeStackClass=None,curvatureTerm_coef=1.,curvatureSigmas=5,meanTerm_coef=5.,expTerm_coef=1.,calculationMaskToOne=None):
+        #calculationMaskToOne is a mask where value with 0 is excluded from calculation and the resultant value of these pixels are always 1
         self.curvatureTerm_coef=curvatureTerm_coef  #+ve
         self.curvatureSigmas=curvatureSigmas
         self.meanTerm_coef=meanTerm_coef  #+ve
         self.expTerm_coef=expTerm_coef  #+ve
         self.snakeStackClass=snakeStackClass
+        self.calculationMaskToOne=calculationMaskToOne
     def __call__(self,addBinary,image,oldsnake):
         result=np.zeros(addBinary.shape)
         if self.curvatureTerm_coef==0:
@@ -142,11 +154,13 @@ class Simplified_Mumford_Shah_driver:
             curvature=gaussianCurvature(addBinary,image,oldsnake,self.curvatureSigmas)
             
         if type(self.snakeStackClass)==type(None):
-            innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,oldsnake)
+            innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,oldsnake,mask=self.calculationMaskToOne)
         else:
             totalsnakes=self.snakeStackClass.getsnake()
-            innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,totalsnakes.snake.copy())
+            innerOuterMeanDiff=getInnerOuterMeanDiff(addBinary,image,totalsnakes.snake.copy(),mask=self.calculationMaskToOne)
         result[addBinary]=self.curvatureTerm_coef*curvature+self.meanTerm_coef*innerOuterMeanDiff*np.exp(innerOuterMeanDiff/np.abs(innerOuterMeanDiff)*self.expTerm_coef*curvature)
+        if self.calculationMaskToOne is not None:
+            result[np.logical_and(addBinary,self.calculationMaskToOne==0)]=1
         return result
 class Specific_value_driver:
     def __new__(cls, *args, **kwargs):
@@ -390,7 +404,7 @@ class SnakeStack:
         self.dialate(numOfTimes)
         return self.getsnake()
 
-def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=None,intiBlocksAxes=None):
+def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnakeBlocks=None,intiBlocksAxes=None,mask=None):
     if setSnakeBlocks is not None:
         if setSnakeBlocks is True:
             setSnakeBlocks=0
@@ -414,6 +428,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     initSnake=[]
     if driver is None:
         driver=Simplified_Mumford_Shah_driver()
+    driver.calculationMaskToOne=mask
     for n in range(len(snakeInitCoordList)):
         isOuterSnake=False
         if len(snakeInitCoordList[n].shape)>1:
