@@ -1409,7 +1409,7 @@ class bfSolver:
             for axis in range(self.points.shape[-1]):
                 if type(timeMapList)!=type(None):
                     sp = nfft.nfft_adjoint(locate_coordsThruTime, coordsThruTime[:,axis], N)
-                    sampleCoeftemp.append(np.array([sp.real[N/2]/len(coordsThruTime),*(sp.real[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.)])*np.array(weight))                  
+                    sampleCoeftemp.append(np.array([sp.real[int(N/2)]/len(coordsThruTime),*(sp.real[int(N/2+1):int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[int(N/2+1):int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.)])*np.array(weight))                  
                 else:
                     sp = np.fft.rfft(coordsThruTime[:,axis])
                     sampleCoeftemp.append(np.array([sp.real[0]/len(coordsThruTime),*(sp.real[1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+1)]/len(coordsThruTime)*2.)]))
