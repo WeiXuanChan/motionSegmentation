@@ -18,7 +18,7 @@ History:
                                                              -debug initial estimate with forwardbackward (reshape Fratio)
   Author: w.x.chan@gmail.com         18Nov2019           - v2.4.4
                                                              -change to logging
-  Author: jorry.zhengyu@gmail.com    03June2020           - v2.7.10
+  Author: jorry.zhengyu@gmail.com    03June2020           - v2.7.11
                                                              -add NFFT initialization to estimateInitialwithRefTime
                                                              -add delimiter option to pointTrace
 
@@ -32,7 +32,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.10'
+_version='2.7.11'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -1407,7 +1407,7 @@ class bfSolver:
             #freq=np.fft.rfftfreq(len(coordsThruTime[:,0]))*2.*np.pi/deltat
             sampleCoeftemp=[]
             for axis in range(self.points.shape[-1]):
-                if timeMapList:
+                if type(timeMapList)!=type(None):
                     sp = nfft.nfft_adjoint(locate_coordsThruTime, coordsThruTime, N)
                     sampleCoeftemp.append(np.array([sp.real[N/2]/len(coordsThruTime),*(sp.real[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.)])*np.array(weight))                  
                 else:
