@@ -1408,7 +1408,7 @@ class bfSolver:
             sampleCoeftemp=[]
             for axis in range(self.points.shape[-1]):
                 if type(timeMapList)!=type(None):
-                    sp = nfft.nfft_adjoint(locate_coordsThruTime, coordsThruTime, N)
+                    sp = nfft.nfft_adjoint(locate_coordsThruTime, coordsThruTime[:,axis], N)
                     sampleCoeftemp.append(np.array([sp.real[N/2]/len(coordsThruTime),*(sp.real[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[N/2+1:int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.)])*np.array(weight))                  
                 else:
                     sp = np.fft.rfft(coordsThruTime[:,axis])
