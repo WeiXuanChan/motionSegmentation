@@ -18,16 +18,20 @@ History:
                                                              -debug initial estimate with forwardbackward (reshape Fratio)
   Author: w.x.chan@gmail.com         18Nov2019           - v2.4.4
                                                              -change to logging
+  Author: jorry.zhengyu@gmail.com    03June2020           - v2.4.5?
+                                                             -add NFFT initialization to estimateInitialwithRefTime
+
 Requirements:
     BsplineFourier
     numpy
     scipy
+    nfft
 
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.4.4'
+_version='2.4.5'
 
 import logging
 logger = logging.getLogger(__name__)
