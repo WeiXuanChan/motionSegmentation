@@ -176,6 +176,10 @@ class Bspline:
                 self.timeMap=timeMap
             if fileScale!=1.:
                 self.scale(1./fileScale)
+        self.numCoefXYZ=1
+        for n in self.coef.shape[:self.coef.shape[-1]]:
+            self.numCoefXYZ*=n
+        self.numCoef=int(self.numCoefXYZ)
     def save(self,file):
         with open(file, 'wb') as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
@@ -601,6 +605,90 @@ class Bspline:
         if singleInput:
             xyzList=xyzList[0]
         return xyzList
+    def regrid(self,coordsList,coefList,tRef=None,weight=None,linearConstrainPoints=[],linearConstrainWeight=None):
+        '''
+        Regrid the BsplineFourier coefficients from sample points
+        Parameters:
+            coordsList=[[x,y,z],] or [x,y,z]:list,np.ndarray
+                Coordinate or list of coordinates
+            coefList(fourier,uvw):list,np.ndarray
+                u, v and w fourier coefficients
+        '''
+        logger.info('Regriding '+str(len(coordsList))+'points.')
+        noneSlice=[]
+        for n in range(self.coef.shape[-1]):
+            noneSlice.append(slice(None))
+        if type(weight)==type(None):
+            if len(coefList[0].shape)>1:
+                weight=np.ones((coefList[0].shape[0],len(coordsList)))
+            else:
+                weight=np.ones(len(coordsList))
+        elif len(weight.shape)==1 and len(coefList[0].shape)>1:
+            weight=weight.reshape((1,-1))
+            weight_temp=weight.copy()
+            for n in range(coefList[0].shape[0]-1):
+                weight=np.concatenate((weight,weight_temp),axis=0)
+        else:
+            weight=np.array(weight)
+        Jmat=[]
+        dCList,CIndList=self.getdC(coordsList)
+        for n in range(len(dCList)):
+            tempRow=sparse.csr_matrix((dCList[n].reshape((-1,),order='F'),(np.zeros(len(CIndList[n])),CIndList[n].copy())),shape=(1,self.numCoefXYZ))
+            Jmat.append(tempRow.copy())
+        if len(linearConstrainPoints)!=0:
+            if type(linearConstrainWeight)==type(None):
+                linearConstrainWeight=np.ones(len(linearConstrainPoints)*self.coef.shape[-1])
+            elif type(linearConstrainWeight) in [int,float]:
+                linearConstrainWeight=np.ones(len(linearConstrainPoints)*self.coef.shape[-1])*linearConstrainWeight
+            else:
+                linearConstrainWeight=(np.ones(self.coef.shape[-1])*linearConstrainWeight).reshape((-1,),order='F')
+            weight=np.hstack((weight,linearConstrainWeight))
+            dCListX,CIndListX=self.getdC(linearConstrainPoints,dxyz=[1,0,0])
+            dCListY,CIndListY=self.getdC(linearConstrainPoints,dxyz=[0,1,0])
+            if self.coef.shape[-1]>2:
+                dCListZ,CIndListZ=self.getdC(linearConstrainPoints,dxyz=[0,0,1])
+            for n in range(len(dCListX)):
+                tempRow=sparse.csr_matrix((dCListX[n].reshape((-1,),order='F'),(np.zeros(len(CIndListX[n])),CIndListX[n].copy())),shape=(1,self.numCoefXYZ))
+                Jmat.append(tempRow.copy())
+                tempRow=sparse.csr_matrix((dCListY[n].reshape((-1,),order='F'),(np.zeros(len(CIndListY[n])),CIndListY[n].copy())),shape=(1,self.numCoefXYZ))
+                Jmat.append(tempRow.copy())
+                if self.coef.shape[-1]>2:
+                    tempRow=sparse.csr_matrix((dCListZ[n].reshape((-1,),order='F'),(np.zeros(len(CIndListZ[n])),CIndListZ[n].copy())),shape=(1,self.numCoefXYZ))
+                    Jmat.append(tempRow.copy())
+        Jmat=sparse.vstack(Jmat)
+        if len(coefList[0].shape)>1:
+            for nFourier in nFourierRange:
+                matW=sparse.diags(weight[nFourier])
+                matA=Jmat.transpose().dot(matW.dot(Jmat))
+                for axis in range(coefList[0].shape[1]):
+                    natb=Jmat.transpose().dot(weight[nFourier]*np.hstack((np.array(coefList)[:,nFourier,axis],np.zeros(len(linearConstrainPoints)*self.coef.shape[-1]))))
+                    C=spsolve(matA, natb)
+                    if type(C)!=np.ndarray:
+                        C=C.todense()
+                    if np.allclose(matA.dot(C), natb):
+                        self.coef[tuple(noneSlice+[nFourier,axis])]=C.reshape(self.coef.shape[:self.coef.shape[-1]],order='F')
+                    else:
+                        logger.warning('Solution error at fourier term '+str(nFourier)+', and axis '+str(axis))
+            if type(tRef)==type(None):
+                self.coef[tuple(noneSlice+[0])]=0.
+            else:
+                fourierRef,=self.getdXYdC([tRef],remove0=True)
+                self.coef[tuple(noneSlice+[0,0])]=-self.coef[tuple(noneSlice+[slice(1,None),0])].dot(fourierRef)
+                self.coef[tuple(noneSlice+[0,1])]=-self.coef[tuple(noneSlice+[slice(1,None),1])].dot(fourierRef)
+                if self.coef.shape[-1]>2:
+                    self.coef[tuple(noneSlice+[0,2])]=-self.coef[tuple(noneSlice+[slice(1,None),2])].dot(fourierRef)
+        else:
+            matW=sparse.diags(weight)
+            matA=Jmat.transpose().dot(matW.dot(Jmat))
+            for axis in range(coefList[0].shape[0]):
+                natb=Jmat.transpose().dot(weight*np.hstack((np.array(coefList)[:,axis],np.zeros(len(linearConstrainPoints)*self.coef.shape[-1]))))
+                C=spsolve(matA, natb)
+                if type(C)!=np.ndarray:
+                    C=C.todense()
+                if np.allclose(matA.dot(C), natb):
+                    self.coef[tuple(noneSlice+[axis])]=C.reshape(self.coef.shape[:self.coef.shape[-1]],order='F')
+                else:
+                    logger.warning('Solution error at axis '+str(axis))
     def scale(self,s):
         ''' 
         Scales self values in origin, spacing,coordinates and coefficients
@@ -1125,74 +1213,6 @@ class BsplineFourier(Bspline):
         self.coef=newcoef.transpose(*tempArrList)
         return
     
-    def regrid(self,coordsList,coefList,tRef=None,weight=None,linearConstrainPoints=[],linearConstrainWeight=None):
-        '''
-        Regrid the BsplineFourier coefficients from sample points
-        Parameters:
-            coordsList=[[x,y,z],] or [x,y,z]:list,np.ndarray
-                Coordinate or list of coordinates
-            coefList(fourier,uvw):list,np.ndarray
-                u, v and w fourier coefficients
-        '''
-        logger.info('Regriding '+str(len(coordsList))+'points.')
-        noneSlice=[]
-        for n in range(self.coef.shape[-1]):
-            noneSlice.append(slice(None))
-        if type(weight)==type(None):
-            weight=np.ones((coefList[0].shape[0],len(coordsList)))
-        elif len(weight.shape)==1:
-            weight=weight.reshape((1,-1))
-            weight_temp=weight.copy()
-            for n in range(coefList[0].shape[0]-1):
-                weight=np.concatenate((weight,weight_temp),axis=0)
-        else:
-            weight=np.array(weight)
-        Jmat=[]
-        dCList,CIndList=self.getdC(coordsList)
-        for n in range(len(dCList)):
-            tempRow=sparse.csr_matrix((dCList[n].reshape((-1,),order='F'),(np.zeros(len(CIndList[n])),CIndList[n].copy())),shape=(1,self.numCoefXYZ))
-            Jmat.append(tempRow.copy())
-        if len(linearConstrainPoints)!=0:
-            if type(linearConstrainWeight)==type(None):
-                linearConstrainWeight=np.ones(len(linearConstrainPoints)*self.coef.shape[-1])
-            elif type(linearConstrainWeight) in [int,float]:
-                linearConstrainWeight=np.ones(len(linearConstrainPoints)*self.coef.shape[-1])*linearConstrainWeight
-            else:
-                linearConstrainWeight=(np.ones(self.coef.shape[-1])*linearConstrainWeight).reshape((-1,),order='F')
-            weight=np.hstack((weight,linearConstrainWeight))
-            dCListX,CIndListX=self.getdC(linearConstrainPoints,dxyz=[1,0,0])
-            dCListY,CIndListY=self.getdC(linearConstrainPoints,dxyz=[0,1,0])
-            if self.coef.shape[-1]>2:
-                dCListZ,CIndListZ=self.getdC(linearConstrainPoints,dxyz=[0,0,1])
-            for n in range(len(dCListX)):
-                tempRow=sparse.csr_matrix((dCListX[n].reshape((-1,),order='F'),(np.zeros(len(CIndListX[n])),CIndListX[n].copy())),shape=(1,self.numCoefXYZ))
-                Jmat.append(tempRow.copy())
-                tempRow=sparse.csr_matrix((dCListY[n].reshape((-1,),order='F'),(np.zeros(len(CIndListY[n])),CIndListY[n].copy())),shape=(1,self.numCoefXYZ))
-                Jmat.append(tempRow.copy())
-                if self.coef.shape[-1]>2:
-                    tempRow=sparse.csr_matrix((dCListZ[n].reshape((-1,),order='F'),(np.zeros(len(CIndListZ[n])),CIndListZ[n].copy())),shape=(1,self.numCoefXYZ))
-                    Jmat.append(tempRow.copy())
-        Jmat=sparse.vstack(Jmat)
-        for nFourier in range(1,coefList[0].shape[0]):
-            matW=sparse.diags(weight[nFourier])
-            matA=Jmat.transpose().dot(matW.dot(Jmat))
-            for axis in range(coefList[0].shape[1]):
-                natb=Jmat.transpose().dot(weight[nFourier]*np.hstack((np.array(coefList)[:,nFourier,axis],np.zeros(len(linearConstrainPoints)*self.coef.shape[-1]))))
-                C=spsolve(matA, natb)
-                if type(C)!=np.ndarray:
-                    C=C.todense()
-                if np.allclose(matA.dot(C), natb):
-                    self.coef[tuple(noneSlice+[nFourier,axis])]=C.reshape(self.coef.shape[:self.coef.shape[-1]],order='F')
-                else:
-                    logger.warning('Solution error at fourier term '+str(nFourier)+', and axis '+str(axis))
-        if type(tRef)==type(None):
-            self.coef[tuple(noneSlice+[0])]=0.
-        else:
-            fourierRef,=self.getdXYdC([tRef],remove0=True)
-            self.coef[tuple(noneSlice+[0,0])]=-self.coef[tuple(noneSlice+[slice(1,None),0])].dot(fourierRef)
-            self.coef[tuple(noneSlice+[0,1])]=-self.coef[tuple(noneSlice+[slice(1,None),1])].dot(fourierRef)
-            if self.coef.shape[-1]>2:
-                self.coef[tuple(noneSlice+[0,2])]=-self.coef[tuple(noneSlice+[slice(1,None),2])].dot(fourierRef)
     def regridToTime(self,coordsList,coefList,time,shape=None):
         if type(shape)!=type(None):
             self.coef=np.zeros(shape)
