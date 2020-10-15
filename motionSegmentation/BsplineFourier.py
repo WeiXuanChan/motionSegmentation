@@ -35,6 +35,8 @@ Author: w.x.chan@gmail.com         10FEB2020           - v2.5.4
                                                              -debug writeSITKfile
 Author: w.x.chan@gmail.com         21FEB2020           - v2.6.2
                                                              -debug BspreadArray.getbspread , correct mgrid
+Author: w.x.chan@gmail.com         21FEB2020           - v2.7.12
+                                                             -add regrid to Bspline
 Requirements:
     autoD
     numpy
@@ -46,7 +48,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.6.2'
+_version='2.7.12'
 
 import logging
 logger = logging.getLogger(__name__)
