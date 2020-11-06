@@ -37,6 +37,8 @@ Author: w.x.chan@gmail.com         21FEB2020           - v2.6.2
                                                              -debug BspreadArray.getbspread , correct mgrid
 Author: w.x.chan@gmail.com         21FEB2020           - v2.7.12
                                                              -add regrid to Bspline
+Author: w.x.chan@gmail.com         07NOV2020           - v2.7.13
+                                                             -debug undefine nFourierRange in Bspline.regrid
 Requirements:
     autoD
     numpy
@@ -48,7 +50,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.12'
+_version='2.7.13'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -659,7 +661,7 @@ class Bspline:
                     Jmat.append(tempRow.copy())
         Jmat=sparse.vstack(Jmat)
         if len(coefList[0].shape)>1:
-            for nFourier in nFourierRange:
+            for nFourier in range(1,coefList[0].shape[0]):
                 matW=sparse.diags(weight[nFourier])
                 matA=Jmat.transpose().dot(matW.dot(Jmat))
                 for axis in range(coefList[0].shape[1]):
