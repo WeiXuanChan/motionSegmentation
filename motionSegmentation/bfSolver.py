@@ -1354,7 +1354,7 @@ class bfSolver:
         return newImg
                     
         
-    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,timeMapList=None,N=20):
+    def estimateInitialwithRefTime(self,OrderedBsplinesList=None,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,timeMapList=None,N=20):
         ''' 
         Estimates bsplineFourier with forward marching
         Parameters:
@@ -1363,7 +1363,7 @@ class bfSolver:
             refTimeStep:int
                 identify the reference time step tref in OrderedBsplinesList
             OrderedBsplinesList2: List(int)
-                List of index in self.bsplines to use as tn-1 to tn marching
+                List of index in self.bsplines to use as tn-1 to tn marching starting from tref to tref+1
             spacingDivision:float
                 sampling points density between bsplineFourier grid
             gap:int
