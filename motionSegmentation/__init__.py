@@ -139,7 +139,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.7.13'
+_version='2.7.14'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
