@@ -23,6 +23,8 @@ History:
                                                              -add delimiter option to pointTrace
   Author: w.x.chan@gmail.com         19Jan2021           - v2.7.14
                                                              -remove Bspline2D in addBsplineFile function (bug)
+                                                             -debug refTimeStep option in estimateInitialwithRefTime
+                                                             -auto detect timeMapList in estimateInitialwithRefTime
 
 Requirements:
     BsplineFourier
@@ -1353,7 +1355,7 @@ class bfSolver:
         return newImg
                     
         
-    def estimateInitialwithRefTime(self,OrderedBsplinesList=None,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,timeMapList=None,N=20):
+    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,N=20):
         ''' 
         Estimates bsplineFourier with forward marching
         Parameters:
@@ -1373,7 +1375,21 @@ class bfSolver:
         '''
         if type(OrderedBsplinesList)==int:
             OrderedBsplinesList=range(OrderedBsplinesList)
-        if type(timeMapList)!=type(None):
+        timeMapList=[refTimeStep]
+        for n in range(len(OrderedBsplinesList)):
+            if self.bsplines[OrderedBsplinesList].timeMap[1] is None:
+                timeMapList=None
+                break
+            else:
+                timeMapList.append(self.bsplines[OrderedBsplinesList].timeMap[1])
+        else:
+            timeMapList=np.array(timeMapList)
+            for n in range(len(timeMapList)):
+                while timeMapList[n]>=self.bsFourier.spacing[-1]:
+                    timeMapList[n]-=self.bsFourier.spacing[-1]
+                while timeMapList[n]<0:
+                    timeMapList[n]+=self.bsFourier.spacing[-1]
+        if timeMapList is not None:
             locate_coordsThruTime = timeMapList/self.bsFourier.spacing[-1] - 0.5
             weight=[]
             weight.append(1)
@@ -1396,7 +1412,7 @@ class bfSolver:
                 coordsThruTime=Fratio.reshape((-1,1))*coordsThruTime+(1-Fratio.reshape((-1,1)))*coordsThruTime2
             else:
                 coordsThruTime=estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,OrderedBsplinesList2=OrderedBsplinesList2,mode='Lagrangian-Eulerian')
-            if refTimeStep!=0:
+            if refTimeStep!=0 and timeMapList is None:
                 tempcoordsThruTime=coordsThruTime.copy()
                 tempcoordsThruTime[:refTimeStep]=coordsThruTime[-refTimeStep:]
                 tempcoordsThruTime[refTimeStep:]=coordsThruTime[:-refTimeStep]
@@ -1406,7 +1422,7 @@ class bfSolver:
             #freq=np.fft.rfftfreq(len(coordsThruTime[:,0]))*2.*np.pi/deltat
             sampleCoeftemp=[]
             for axis in range(self.points.shape[-1]):
-                if type(timeMapList)!=type(None):
+                if timeMapList is not None:
                     sp = nfft.nfft_adjoint(locate_coordsThruTime, coordsThruTime[:,axis], N)
                     sampleCoeftemp.append(np.array([sp.real[int(N/2)]/len(coordsThruTime),*(sp.real[int(N/2+1):int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.),*(-sp.imag[int(N/2+1):int(self.bsFourier.coef.shape[self.points.shape[-1]]/2+N/2+1)]/len(coordsThruTime)*2.)])*np.array(weight))                  
                 else:
