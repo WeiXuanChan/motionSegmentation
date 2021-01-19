@@ -21,7 +21,7 @@ History:
   Author: jorry.zhengyu@gmail.com    03June2020           - v2.7.11
                                                              -add NFFT initialization to estimateInitialwithRefTime
                                                              -add delimiter option to pointTrace
-  Author: w.x.chan@gmail.com         19Jan2021           - v2.7.11
+  Author: w.x.chan@gmail.com         19Jan2021           - v2.7.14
                                                              -remove Bspline2D in addBsplineFile function (bug)
 
 Requirements:
@@ -34,7 +34,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.11'
+_version='2.7.14'
 
 import logging
 logger = logging.getLogger(__name__)
