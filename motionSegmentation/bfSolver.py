@@ -1375,13 +1375,16 @@ class bfSolver:
         '''
         if type(OrderedBsplinesList)==int:
             OrderedBsplinesList=range(OrderedBsplinesList)
-        timeMapList=[refTimeStep]
+        if self.bsplines[OrderedBsplinesList[0]].timeMap[0] is None:
+            timeMapList=[refTimeStep]
+        else:
+            timeMapList=[self.bsplines[OrderedBsplinesList[0]].timeMap[0]]
         for n in range(len(OrderedBsplinesList)):
-            if self.bsplines[OrderedBsplinesList].timeMap[1] is None:
+            if self.bsplines[OrderedBsplinesList[n]].timeMap[1] is None:
                 timeMapList=None
                 break
             else:
-                timeMapList.append(self.bsplines[OrderedBsplinesList].timeMap[1])
+                timeMapList.append(self.bsplines[OrderedBsplinesList[n]].timeMap[1])
         else:
             timeMapList=np.array(timeMapList)
             for n in range(len(timeMapList)):
