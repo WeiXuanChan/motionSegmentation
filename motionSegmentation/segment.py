@@ -25,13 +25,15 @@ History:
                                                              - added intiBlocksAxes to initSnakeStack
           w.x.chan@gmail.com         06MAR2020           - v2.7.9
                                                              -added mask to getInnerOuterMeanDiff, Simplified_Mumford_Shah_driver,and initSnakeStack
+          w.x.chan@gmail.com         19Jan2021           - v2.7.14
+                                                             -added manualSliceBySlice
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.9'
+_version='2.7.14'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -490,3 +492,67 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     return resultSnakeStack
     
         
+def manualSliceBySlice(img):
+    a=img.show(disable['click','swap'])
+    while not(a.enter):
+        a=img.show(disable=['click','swap'],initLineList=a.lines)
+    for n in range(len(a.lines)-1,-1,-1):
+        if len(a.lines[n])<3:
+            a.lines.pop(n)
+    if a.color:
+        if len(img.dim)>4:
+            raise Exception('Dimension of image more than 3,'+str(img.dim))
+    else:
+        if len(img.dim)>3:
+            raise Exception('Dimension of image more than 3,'+str(img.dim))
+    aind=0
+    img2=img.clone()
+    if a.color:
+        img2.changeGreyscaleFormat()
+    img2.data[:]=0
+    img2.data=img2.data.astype('uint8')
+    for n in range(img2.data.shape[0]):
+        if a.lines[aind][0][0]==n:
+            ar=np.array(a.lines[aind])
+            tck,temp = interpolate.splprep([ar[:,-2], ar[:,-1]], s=0,k=min(4,len(ar))-1)
+            cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=1000), tck)).T
+            cspline_detectline2=np.floor(cspline_detectline).astype(int)
+            for nn in range(len(cspline_detectline)):
+                img2.data[n][tuple(cspline_detectline[nn])]=1
+            ar2=np.array([ar[0],0.5*(ar[0]+ar[-1]),ar[-1]])
+            tck,temp = interpolate.splprep([ar2[:,-2], ar2[:,-1]], s=0,k=1)
+            cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=1000), tck)).T
+            cspline_detectline=np.around(cspline_detectline).astype(int)
+            for nn in range(len(cspline_detectline)):
+                img2.data[n][tuple(cspline_detectline[nn])]=1
+            img2.data[n]=binary_fill_holes(img2.data[n]).astype(img2.data.dtype)
+            aind+=1
+            if aind>=len(a.lines):
+                break
+    img2.data*=255
+    img3=img2.clone()
+    getind=[]
+    for n in range(len(a.lines)):
+        getind.append(a.lines[n][0][0])
+    getind=np.array(getind).astype(int)
+    currentind=0
+    for n in range(getind[0]+1,getind[-1]):
+        if n==getind[currentind+1]:
+            currentind+=1
+        else:
+            ratio=float(n-getind[currentind])/(getind[currentind+1]-getind[currentind])
+            img3.data[n]=(img2.data[getind[currentind+1]]*ratio+img2.data[getind[currentind]]*(1.-ratio)).astype(img2.data.dtype)
+    sigma=[]
+    if a.color:
+        nDim=[0,-3,-2]
+    else:
+        nDim=[0,-2,-1]
+    for n in nDim:
+        sigma.append(img3.dimlen[dim])
+    sigma=np.array(sigma)
+    sigma
+    img3.data=gaussian_filter(img3.data,)
+    return img3
+
+    
+    
