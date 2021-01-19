@@ -21,6 +21,8 @@ History:
   Author: jorry.zhengyu@gmail.com    03June2020           - v2.7.11
                                                              -add NFFT initialization to estimateInitialwithRefTime
                                                              -add delimiter option to pointTrace
+  Author: w.x.chan@gmail.com         19Jan2021           - v2.7.11
+                                                             -remove Bspline2D in addBsplineFile function (bug)
 
 Requirements:
     BsplineFourier
@@ -212,10 +214,7 @@ class bfSolver:
                 self.weights.append(1.)
             else:
                 self.weights.append(weightList[n])
-            if twoD:
-                self.bsplines.append(BsplineFourier.Bspline2D(coefFile=BsplineFileList[n],shape=None,timeMap=timeMapList[n],spacing=None,fileScale=fileScale,delimiter=' ',origin=None))
-            else:
-                self.bsplines.append(BsplineFourier.Bspline(coefFile=BsplineFileList[n],shape=None,timeMap=timeMapList[n],spacing=None,fileScale=fileScale,delimiter=' ',origin=None))
+            self.bsplines.append(BsplineFourier.Bspline(coefFile=BsplineFileList[n],shape=None,timeMap=timeMapList[n],spacing=None,fileScale=fileScale,delimiter=' ',origin=None))
     def addImgVecFile(self,imgVecFileList=None,timeMapList=None,weightList=None,fileScale=1.):
         ''' 
         add (multiple) BspineFile to solver
