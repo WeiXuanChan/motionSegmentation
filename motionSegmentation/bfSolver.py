@@ -1355,14 +1355,12 @@ class bfSolver:
         return newImg
                     
         
-    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,refTimeStep=0,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,N=20):
+    def estimateInitialwithRefTime(self,OrderedBsplinesList,tRef=None,OrderedBsplinesList2=None,spacingDivision=2.,gap=0,forwardbackward=False,N=20):
         ''' 
         Estimates bsplineFourier with forward marching
         Parameters:
             OrderedBsplinesList: List(int)
                 List of index in self.bsplines to use as tref to tn marching
-            refTimeStep:int
-                identify the reference time step tref in OrderedBsplinesList
             OrderedBsplinesList2: List(int)
                 List of index in self.bsplines to use as tn-1 to tn marching starting from tref to tref+1
             spacingDivision:float
@@ -1376,22 +1374,24 @@ class bfSolver:
         if type(OrderedBsplinesList)==int:
             OrderedBsplinesList=range(OrderedBsplinesList)
         if self.bsplines[OrderedBsplinesList[0]].timeMap[0] is None:
-            timeMapList=[refTimeStep]
+            timeMapList=None
+            logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', 'str(self.bsplines[OrderedBsplinesList[0]].timeMap)+'.')
         else:
             timeMapList=[self.bsplines[OrderedBsplinesList[0]].timeMap[0]]
-        for n in range(len(OrderedBsplinesList)):
-            if self.bsplines[OrderedBsplinesList[n]].timeMap[1] is None:
-                timeMapList=None
-                break
+            for n in range(len(OrderedBsplinesList)):
+                if self.bsplines[OrderedBsplinesList[n]].timeMap[1] is None:
+                    timeMapList=None
+                    logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', 'str(self.bsplines[OrderedBsplinesList[n]].timeMap)+'.')
+                    break
+                else:
+                    timeMapList.append(self.bsplines[OrderedBsplinesList[n]].timeMap[1])
             else:
-                timeMapList.append(self.bsplines[OrderedBsplinesList[n]].timeMap[1])
-        else:
-            timeMapList=np.array(timeMapList)
-            for n in range(len(timeMapList)):
-                while timeMapList[n]>=self.bsFourier.spacing[-1]:
-                    timeMapList[n]-=self.bsFourier.spacing[-1]
-                while timeMapList[n]<0:
-                    timeMapList[n]+=self.bsFourier.spacing[-1]
+                timeMapList=np.array(timeMapList)
+                for n in range(len(timeMapList)):
+                    while timeMapList[n]>=self.bsFourier.spacing[-1]:
+                        timeMapList[n]-=self.bsFourier.spacing[-1]
+                    while timeMapList[n]<0:
+                        timeMapList[n]+=self.bsFourier.spacing[-1]
         if timeMapList is not None:
             locate_coordsThruTime = timeMapList/self.bsFourier.spacing[-1] - 0.5
             weight=[]
@@ -1415,11 +1415,6 @@ class bfSolver:
                 coordsThruTime=Fratio.reshape((-1,1))*coordsThruTime+(1-Fratio.reshape((-1,1)))*coordsThruTime2
             else:
                 coordsThruTime=estCoordsThruTime(coord,self.bsplines,OrderedBsplinesList,OrderedBsplinesList2=OrderedBsplinesList2,mode='Lagrangian-Eulerian')
-            if refTimeStep!=0 and timeMapList is None:
-                tempcoordsThruTime=coordsThruTime.copy()
-                tempcoordsThruTime[:refTimeStep]=coordsThruTime[-refTimeStep:]
-                tempcoordsThruTime[refTimeStep:]=coordsThruTime[:-refTimeStep]
-                coordsThruTime=tempcoordsThruTime.copy()
             coordsThruTime=np.array(coordsThruTime)
             #deltat=self.bsplines[0].timeMap[1]-self.bsplines[0].timeMap[0]
             #freq=np.fft.rfftfreq(len(coordsThruTime[:,0]))*2.*np.pi/deltat
