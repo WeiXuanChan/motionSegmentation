@@ -27,13 +27,15 @@ History:
                                                              -added mask to getInnerOuterMeanDiff, Simplified_Mumford_Shah_driver,and initSnakeStack
           w.x.chan@gmail.com         19Jan2021           - v2.7.14
                                                              -added manualSliceBySlice
+          w.x.chan@gmail.com         20Jan2021           - v2.7.17
+                                                             -debug manualSliceBySlice to get smooth interpolation between segmented slice
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.14'
+_version='2.7.17'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -492,7 +494,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     return resultSnakeStack
     
         
-def manualSliceBySlice(img):
+def manualSliceBySlice(img,lengthScaleRatio=0.2):
     a=img.show(disable['click','swap'])
     while not(a.enter):
         a=img.show(disable=['click','swap'],initLineList=a.lines)
@@ -511,6 +513,7 @@ def manualSliceBySlice(img):
         img2.changeGreyscaleFormat()
     img2.data[:]=0
     img2.data=img2.data.astype('uint8')
+    minArea=float('int')
     for n in range(img2.data.shape[0]):
         if a.lines[aind][0][0]==n:
             ar=np.array(a.lines[aind])
@@ -526,10 +529,15 @@ def manualSliceBySlice(img):
             for nn in range(len(cspline_detectline)):
                 img2.data[n][tuple(cspline_detectline[nn])]=1
             img2.data[n]=binary_fill_holes(img2.data[n]).astype(img2.data.dtype)
+            temp_area=img2.data[n].sum()
+            if temp_area<minArea:
+                minArea=temp_area
             aind+=1
             if aind>=len(a.lines):
                 break
     img2.data*=255
+    lengthScale=max(2,lengthScaleRatio*minArea**0.5)
+    img2.data=gaussian_filter(img2.data,(0,lengthScale,lengthScale))
     img3=img2.clone()
     getind=[]
     for n in range(len(a.lines)):
@@ -549,9 +557,9 @@ def manualSliceBySlice(img):
         nDim=[0,-2,-1]
     for n in nDim:
         sigma.append(img3.dimlen[dim])
-    sigma=np.array(sigma)
-    sigma
-    img3.data=gaussian_filter(img3.data,)
+    sigma=1./np.array(sigma)
+    sigma=sigma/sigma[1:].mean()*lengthScale
+    img3.data=gaussian_filter(img3.data,sigma)
     return img3
 
     
