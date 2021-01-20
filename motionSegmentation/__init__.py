@@ -153,6 +153,12 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
-from BsplineFourier import *
-from bfSolver import *
+try:
+    from BsplineFourier import *
+except Exception as e:
+    logger.warning(repr(e))
+try:
+    from bfSolver import *
+except Exception as e:
+    logger.warning(repr(e))
 
