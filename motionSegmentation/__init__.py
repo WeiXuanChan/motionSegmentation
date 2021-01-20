@@ -125,6 +125,11 @@ Author: w.x.chan@gmail.com    07Nov2020                - v2.7.13
 						-BsplineFourier version 2.7.13
 						-motionCorrect version 2.7.8
 						-segment verion 2.7.9
+Author: w.x.chan@gmail.com    20Jan2021                - v2.7.14
+						-bfSolver version 2.7.14
+						-BsplineFourier version 2.7.14
+						-motionCorrect version 2.7.8
+						-segment verion 2.7.14
 
 Requirements:
     autoD
