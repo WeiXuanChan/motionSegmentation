@@ -21,7 +21,7 @@ History:
   Author: jorry.zhengyu@gmail.com    03June2020           - v2.7.11
                                                              -add NFFT initialization to estimateInitialwithRefTime
                                                              -add delimiter option to pointTrace
-  Author: w.x.chan@gmail.com         19Jan2021           - v2.7.14
+  Author: w.x.chan@gmail.com         19Jan2021           - v2.7.15
                                                              -remove Bspline2D in addBsplineFile function (bug)
                                                              -debug refTimeStep option in estimateInitialwithRefTime
                                                              -auto detect timeMapList in estimateInitialwithRefTime
@@ -36,7 +36,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.14'
+_version='2.7.15'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -1375,13 +1375,13 @@ class bfSolver:
             OrderedBsplinesList=range(OrderedBsplinesList)
         if self.bsplines[OrderedBsplinesList[0]].timeMap[0] is None:
             timeMapList=None
-            logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', 'str(self.bsplines[OrderedBsplinesList[0]].timeMap)+'.')
+            logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', '+str(self.bsplines[OrderedBsplinesList[0]].timeMap)+'.')
         else:
             timeMapList=[self.bsplines[OrderedBsplinesList[0]].timeMap[0]]
             for n in range(len(OrderedBsplinesList)):
                 if self.bsplines[OrderedBsplinesList[n]].timeMap[1] is None:
                     timeMapList=None
-                    logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', 'str(self.bsplines[OrderedBsplinesList[n]].timeMap)+'.')
+                    logger.warning('Unable to determine corresponding timemap of bsplines '+str(n)+', '+str(self.bsplines[OrderedBsplinesList[n]].timeMap)+'.')
                     break
                 else:
                     timeMapList.append(self.bsplines[OrderedBsplinesList[n]].timeMap[1])
