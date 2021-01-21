@@ -494,8 +494,8 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     return resultSnakeStack
     
         
-def manualSliceBySlice(img,lengthScaleRatio=0.2):
-    a=img.show(disable['click','swap'])
+def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
+    a=img.show(disable=['click','swap'],initLineList=initLineList)
     while not(a.enter):
         a=img.show(disable=['click','swap'],initLineList=a.lines)
     for n in range(len(a.lines)-1,-1,-1):
