@@ -498,7 +498,22 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     return resultSnakeStack
 
 def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
-    a=img.show(disable=['click','swap'],initLineList=initLineList)
+    if initLineList is not None:
+        if isinstance(initLineList,list) and len(initLineList[0].shape)==2:
+            a=img.show(disable=['click','swap'],initLineList=initLineList)
+        else:
+            newInitLineList=[[]]
+            currentslice=initLineList[0][0]
+            for n in range(len(initLineList)):
+                if currentslice!=initLineList[n][0]:
+                    newInitLineList.append([])
+                    currentslice=initLineList[n][0]
+                newInitLineList[-1].append(initLineList[n])
+            for n in range(len(newInitLineList)):
+                newInitLineList[n]=np.array(newInitLineList[n])
+            a=img.show(disable=['click','swap'],initLineList=newInitLineList)
+    else:
+        a=img.show(disable=['click','swap'])
     while not(a.enter):
         a=img.show(disable=['click','swap'],initLineList=a.lines)
     for n in range(len(a.lines)-1,-1,-1):
@@ -519,19 +534,23 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     minArea=float('inf')
     for n in range(img2.data.shape[0]):
         if a.lines[aind][0][0]==n:
-            ar=np.array(a.lines[aind])
-            tck,temp = interpolate.splprep([ar[:,-2], ar[:,-1]], s=0,k=min(4,len(ar))-1)
-            cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=1000), tck)).T
-            cspline_detectline=np.floor(cspline_detectline).astype(int)
-            for nn in range(len(cspline_detectline)):
-                img2.data[n][tuple(cspline_detectline[nn])]=1
-            ar2=np.array([ar[0],0.5*(ar[0]+ar[-1]),ar[-1]])
-            tck,temp = interpolate.splprep([ar2[:,-2], ar2[:,-1]], s=0,k=1)
-            cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=1000), tck)).T
-            cspline_detectline=np.around(cspline_detectline).astype(int)
-            for nn in range(len(cspline_detectline)):
-                img2.data[n][tuple(cspline_detectline[nn])]=1
-            img2.data[n]=binary_fill_holes(img2.data[n]).astype(img2.data.dtype)
+            for num in [1000,10000,100000,1000000]:
+                ar=np.array(a.lines[aind])
+                tck,temp = interpolate.splprep([ar[:,-2], ar[:,-1]], s=0,k=min(4,len(ar))-1)
+                cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=num), tck)).T
+                cspline_detectline=np.floor(cspline_detectline).astype(int)
+                for nn in range(len(cspline_detectline)):
+                    img2.data[n][tuple(cspline_detectline[nn])]=1
+                ar2=np.array([ar[0],0.5*(ar[0]+ar[-1]),ar[-1]])
+                tck,temp = interpolate.splprep([ar2[:,-2], ar2[:,-1]], s=0,k=1)
+                cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=num), tck)).T
+                cspline_detectline=np.floor(cspline_detectline).astype(int)
+                for nn in range(len(cspline_detectline)):
+                    img2.data[n][tuple(cspline_detectline[nn])]=1
+                countpixel=img2.data[n].sum()
+                img2.data[n]=binary_fill_holes(img2.data[n]).astype(img2.data.dtype)
+                if img2.data[n].sum()>countpixel:
+                    break
             temp_area=img2.data[n].sum()
             if temp_area<minArea:
                 minArea=temp_area
@@ -565,4 +584,3 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     img3.data=gaussian_filter(img3.data,sigma)
     return (a.lines,img3)
 
-    
