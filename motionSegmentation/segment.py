@@ -29,13 +29,15 @@ History:
                                                              -added manualSliceBySlice
           w.x.chan@gmail.com         20Jan2021           - v2.7.17
                                                              -debug manualSliceBySlice to get smooth interpolation between segmented slice
+          w.x.chan@gmail.com         25Jan2021           - v2.7.18
+                                                             -debug manualSliceBySlice
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.17'
+_version='2.7.18'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,8 @@ import numpy as np
 from scipy.ndimage import morphology
 from scipy.ndimage import gaussian_filter
 from scipy.ndimage import laplace
+from scipy import interpolate
+from scipy.ndimage import binary_fill_holes
 try:
     from skimage import measure
 except:
@@ -492,8 +496,7 @@ def initSnakeStack(imageArray,snakeInitCoordList,driver=None,initSize=1,setSnake
     driver.snakeStackClass=resultSnakeStack
     resultSnakeStack.check()
     return resultSnakeStack
-    
-        
+
 def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     a=img.show(disable=['click','swap'],initLineList=initLineList)
     while not(a.enter):
@@ -513,13 +516,13 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
         img2.changeGreyscaleFormat()
     img2.data[:]=0
     img2.data=img2.data.astype('uint8')
-    minArea=float('int')
+    minArea=float('inf')
     for n in range(img2.data.shape[0]):
         if a.lines[aind][0][0]==n:
             ar=np.array(a.lines[aind])
             tck,temp = interpolate.splprep([ar[:,-2], ar[:,-1]], s=0,k=min(4,len(ar))-1)
             cspline_detectline = np.array(interpolate.splev(np.linspace(0, 1,num=1000), tck)).T
-            cspline_detectline2=np.floor(cspline_detectline).astype(int)
+            cspline_detectline=np.floor(cspline_detectline).astype(int)
             for nn in range(len(cspline_detectline)):
                 img2.data[n][tuple(cspline_detectline[nn])]=1
             ar2=np.array([ar[0],0.5*(ar[0]+ar[-1]),ar[-1]])
@@ -556,11 +559,10 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     else:
         nDim=[0,-2,-1]
     for n in nDim:
-        sigma.append(img3.dimlen[dim])
+        sigma.append(img3.dimlen[img3.dim[n]])
     sigma=1./np.array(sigma)
     sigma=sigma/sigma[1:].mean()*lengthScale
     img3.data=gaussian_filter(img3.data,sigma)
-    return img3
+    return (a.lines,img3)
 
-    
     
