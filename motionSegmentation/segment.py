@@ -29,7 +29,7 @@ History:
                                                              -added manualSliceBySlice
           w.x.chan@gmail.com         20Jan2021           - v2.7.17
                                                              -debug manualSliceBySlice to get smooth interpolation between segmented slice
-          w.x.chan@gmail.com         25Jan2021           - v2.7.18
+          w.x.chan@gmail.com         25Jan2021           - v2.7.19
                                                              -debug manualSliceBySlice
 Requirements:
     numpy
@@ -37,7 +37,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.18'
+_version='2.7.19'
 import logging
 logger = logging.getLogger(__name__)
 
