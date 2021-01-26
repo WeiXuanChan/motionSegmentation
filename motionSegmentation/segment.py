@@ -549,8 +549,10 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
                     img2.data[n][tuple(cspline_detectline[nn])]=1
                 countpixel=img2.data[n].sum()
                 img2.data[n]=binary_fill_holes(img2.data[n]).astype(img2.data.dtype)
-                if img2.data[n].sum()>countpixel:
+                if img2.data[n].sum()>(countpixel*1.1):
                     break
+            else:
+                logger.warning('Could not form a closed surface with area larger than 1.1 of boundary on Slice '+str(n))
             temp_area=img2.data[n].sum()
             if temp_area<minArea:
                 minArea=temp_area
