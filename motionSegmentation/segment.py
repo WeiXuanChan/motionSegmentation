@@ -31,13 +31,15 @@ History:
                                                              -debug manualSliceBySlice to get smooth interpolation between segmented slice
           w.x.chan@gmail.com         25Jan2021           - v2.7.19
                                                              -debug manualSliceBySlice
+          w.x.chan@gmail.com         25Jan2021           - v2.7.20
+                                                             -in manualSliceBySlice, reorder lines and debug multiple lines in slice
 Requirements:
     numpy
 Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.19'
+_version='2.7.20'
 import logging
 logger = logging.getLogger(__name__)
 
@@ -525,6 +527,11 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     else:
         if len(img.dim)>3:
             raise Exception('Dimension of image more than 3,'+str(img.dim))
+    getind=[]
+    for n in range(len(a.lines)):
+        getind.append(a.lines[n][0][0])
+    getind=np.array(getind).astype(int)
+    a.lines = [a.lines[i] for i in np.sort(getind)]
     aind=0
     img2=img.clone()
     if a.color:
@@ -533,7 +540,7 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
     img2.data=img2.data.astype('uint8')
     minArea=float('inf')
     for n in range(img2.data.shape[0]):
-        if a.lines[aind][0][0]==n:
+        while a.lines[aind][0][0]==n:
             for num in [1000,10000,100000,1000000]:
                 ar=np.array(a.lines[aind])
                 tck,temp = interpolate.splprep([ar[:,-2], ar[:,-1]], s=0,k=min(4,len(ar))-1)
@@ -559,14 +566,12 @@ def manualSliceBySlice(img,initLineList=None,lengthScaleRatio=0.2):
             aind+=1
             if aind>=len(a.lines):
                 break
+        if aind>=len(a.lines):
+            break
     img2.data*=255
     lengthScale=max(2,lengthScaleRatio*minArea**0.5)
     img2.data=gaussian_filter(img2.data,(0,lengthScale,lengthScale))
     img3=img2.clone()
-    getind=[]
-    for n in range(len(a.lines)):
-        getind.append(a.lines[n][0][0])
-    getind=np.array(getind).astype(int)
     currentind=0
     for n in range(getind[0]+1,getind[-1]):
         if n==getind[currentind+1]:
