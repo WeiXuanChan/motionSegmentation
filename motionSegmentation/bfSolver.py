@@ -1443,7 +1443,7 @@ class bfSolver:
         if fmt is None:
             fmt='{0:.2e}'
         elif fmt[0]!='{':
-            fmt='{0:'+fmt'}'
+            fmt='{0:'+fmt+'}'
         os.makedirs(savePath, exist_ok=True)
         if type(timeList)==type(None):
             timeList=10
