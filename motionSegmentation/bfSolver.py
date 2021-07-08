@@ -1437,7 +1437,11 @@ class bfSolver:
         
         self.bsFourier.regrid(refCoord,sampleCoef,tRef=tRef)
         return (refCoord,sampleCoef)
-    def pointTrace(self,stlFile,savePath,timeList=None,delimiter=' '):
+    def pointTrace(self,stlFile,savePath,timeList=None,delimiter=' ',fmt=None):
+        if fmt is None:
+            fmt='{0:.2e}'
+        elif fmt[0]!='{':
+            fmt='{0:'+fmt'}'
         os.makedirs(savePath, exist_ok=True)
         if type(timeList)==type(None):
             timeList=10
@@ -1455,11 +1459,11 @@ class bfSolver:
             if stlFile[-3:]=='stl':
                 ref_mesh.vertices[:,:self.bsFourier.coef.shape[-1]]=np.array(newpts)
                 try:
-                    trimesh.io.export.export_mesh(ref_mesh,savePath+'/t{0:.2e}'.format(time)+'.stl')
+                    trimesh.io.export.export_mesh(ref_mesh,savePath+'/t'+fmt.format(time)+'.stl')
                 except:
-                    ref_mesh.export(savePath+'/t{0:.2e}'.format(time)+'.stl')
+                    ref_mesh.export(savePath+'/t'+fmt.format(time)+'.stl')
             else:
-                np.savetxt(savePath+'/t{0:.2e}'.format(time)+'.txt',np.array(newpts))
+                np.savetxt(savePath+'/t'+fmt.format(time)+'.txt',np.array(newpts))
     def estimatedStrainDetect(self,threshold=-1.,outputCoord=True):
         testShape=(np.array(self.bsFourier.coef.shape[:3])-1).astype(int)
         dXYZ=[]
