@@ -25,6 +25,8 @@ History:
                                                              -remove Bspline2D in addBsplineFile function (bug)
                                                              -debug refTimeStep option in estimateInitialwithRefTime
                                                              -auto detect timeMapList in estimateInitialwithRefTime
+  Author: w.x.chan@gmail.com         08Jul2021           - v2.7.20
+                                                             -added fmt for pointTrace
 
 Requirements:
     BsplineFourier
@@ -36,7 +38,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.15'
+_version='2.7.20'
 
 import logging
 logger = logging.getLogger(__name__)
