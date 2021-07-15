@@ -1460,6 +1460,7 @@ class bfSolver:
             newpts=self.bsFourier.getCoordFromRef(coords)
             if stlFile[-3:]=='stl':
                 ref_mesh.vertices[:,:self.bsFourier.coef.shape[-1]]=np.array(newpts)
+                trimesh.repair.fix_normals(ref_mesh)
                 try:
                     trimesh.io.export.export_mesh(ref_mesh,savePath+'/t'+fmt.format(time)+'.stl')
                 except:
