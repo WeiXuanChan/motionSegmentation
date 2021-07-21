@@ -30,127 +30,132 @@ History:
     ---------- ---------- ----------------------------
   Author: w.x.chan@gmail.com         31JAN2018           - Created
 Author: w.x.chan@gmail.com         31JAN2019           - v1.2.0
-						-bfSolver version 1.0.0
-						-BsplineFourier version 1.2.0
+                        -bfSolver version 1.0.0
+                        -BsplineFourier version 1.2.0
 Author: w.x.chan@gmail.com         12SEP2019           - v2.0.0
-						-bfSolver version 2.0.0
-						-BsplineFourier version 2.0.0
+                        -bfSolver version 2.0.0
+                        -BsplineFourier version 2.0.0
 Author: w.x.chan@gmail.com         12SEP2019           - v2.1.0
-						-bfSolver version 2.1.0
-						-BsplineFourier version 2.0.0
+                        -bfSolver version 2.1.0
+                        -BsplineFourier version 2.0.0
 Author: w.x.chan@gmail.com         17SEP2019           - v2.2.3
-						-bfSolver version 2.1.0
-						-BsplineFourier version 2.2.0
+                        -bfSolver version 2.1.0
+                        -BsplineFourier version 2.2.0
 Author: w.x.chan@gmail.com         23SEP2019           - v2.2.4
-						-bfSolver version 2.2.4
-						-BsplineFourier version 2.2.0
+                        -bfSolver version 2.2.4
+                        -BsplineFourier version 2.2.0
 Author: jorry.zhengyu@gmail.com    26SEP2019           - v2.2.5
-						-bfSolver version 2.2.4
-						-BsplineFourier version 2.2.5
+                        -bfSolver version 2.2.4
+                        -BsplineFourier version 2.2.5
 Author: w.x.chan@gmail.com    26SEP2019                - v2.2.6
-						-bfSolver version 2.2.4
-						-BsplineFourier version 2.2.6
-						- do import *
+                        -bfSolver version 2.2.4
+                        -BsplineFourier version 2.2.6
+                        - do import *
 Author: w.x.chan@gmail.com    07OCT2019                - v2.2.7
-						-bfSolver version 2.2.4
-						-BsplineFourier version 2.2.7
+                        -bfSolver version 2.2.4
+                        -BsplineFourier version 2.2.7
 Author: w.x.chan@gmail.com    07OCT2019                - v2.3.3
-						-bfSolver version 2.2.4
-						-BsplineFourier version 2.3.3
+                        -bfSolver version 2.2.4
+                        -BsplineFourier version 2.3.3
 Author: w.x.chan@gmail.com    13NOV2019                - v2.4.1
-						-bfSolver version 2.4.1
-						-BsplineFourier version 2.3.3
+                        -bfSolver version 2.4.1
+                        -BsplineFourier version 2.3.3
 Author: w.x.chan@gmail.com    18NOV2019                - v2.4.2
-						-bfSolver version 2.4.1
-						-BsplineFourier version 2.4.2
+                        -bfSolver version 2.4.1
+                        -BsplineFourier version 2.4.2
 Author: w.x.chan@gmail.com    18NOV2019                - v2.4.3
-						-bfSolver version 2.4.3
-						-BsplineFourier version 2.4.2
+                        -bfSolver version 2.4.3
+                        -BsplineFourier version 2.4.2
 Author: w.x.chan@gmail.com    18NOV2019                - v2.4.5
-						-bfSolver version 2.4.4
-						-BsplineFourier version 2.4.4
+                        -bfSolver version 2.4.4
+                        -BsplineFourier version 2.4.4
 Author: w.x.chan@gmail.com    11DEC2019                - v2.4.6
-						-bfSolver version 2.4.6
-						-BsplineFourier version 2.4.4
+                        -bfSolver version 2.4.6
+                        -BsplineFourier version 2.4.4
 Author: w.x.chan@gmail.com    13DEC2019                - v2.4.7
-						-bfSolver version 2.4.6
-						-BsplineFourier version 2.4.7
+                        -bfSolver version 2.4.6
+                        -BsplineFourier version 2.4.7
 Author: w.x.chan@gmail.com    04FEB2020                - v2.5.1
-						-bfSolver version 2.4.6
-						-BsplineFourier version 2.4.7
-						-motionCorrect version 2.4.7
-						-segment verion 2.5.1
+                        -bfSolver version 2.4.6
+                        -BsplineFourier version 2.4.7
+                        -motionCorrect version 2.4.7
+                        -segment verion 2.5.1
 Author: w.x.chan@gmail.com    04FEB2020                - v2.5.7
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.4.7
-						-motionCorrect version 2.4.7
-						-segment verion 2.5.7
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.4.7
+                        -motionCorrect version 2.4.7
+                        -segment verion 2.5.7
 Author: w.x.chan@gmail.com    18FEB2020                - v2.5.10
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.4.7
-						-motionCorrect version 2.4.7
-						-segment verion 2.5.10
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.4.7
+                        -motionCorrect version 2.4.7
+                        -segment verion 2.5.10
 Author: w.x.chan@gmail.com    21FEB2020                - v2.6.2
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.6.2
-						-motionCorrect version 2.4.7
-						-segment verion 2.6.1
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.6.2
+                        -motionCorrect version 2.4.7
+                        -segment verion 2.6.1
 Author: w.x.chan@gmail.com    27FEB2020                - v2.6.3
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.6.2
-						-motionCorrect version 2.6.3
-						-segment verion 2.6.1
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.6.2
+                        -motionCorrect version 2.6.3
+                        -segment verion 2.6.1
 Author: w.x.chan@gmail.com    27FEB2020                - v2.7.7
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.6.2
-						-motionCorrect version 2.6.3
-						-segment verion 2.7.7
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.6.2
+                        -motionCorrect version 2.6.3
+                        -segment verion 2.7.7
 Author: w.x.chan@gmail.com    06MAR2020                - v2.7.9
-						-bfSolver version 2.5.4
-						-BsplineFourier version 2.6.2
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.9
+                        -bfSolver version 2.5.4
+                        -BsplineFourier version 2.6.2
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.9
 Author: jorry.zhengyu@gmail.com    03June2020                - v2.7.11
-						-bfSolver version 2.7.11
-						-BsplineFourier version 2.6.2
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.9
+                        -bfSolver version 2.7.11
+                        -BsplineFourier version 2.6.2
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.9
 Author: w.x.chan@gmail.com    15Oct2020                - v2.7.12
-						-bfSolver version 2.7.11
-						-BsplineFourier version 2.7.12
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.9
+                        -bfSolver version 2.7.11
+                        -BsplineFourier version 2.7.12
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.9
 Author: w.x.chan@gmail.com    07Nov2020                - v2.7.13
-						-bfSolver version 2.7.11
-						-BsplineFourier version 2.7.13
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.9
+                        -bfSolver version 2.7.11
+                        -BsplineFourier version 2.7.13
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.9
 Author: w.x.chan@gmail.com    20Jan2021                - v2.7.16 -added import exception
-						-bfSolver version 2.7.15
-						-BsplineFourier version 2.7.14
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.14
+                        -bfSolver version 2.7.15
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.14
 Author: w.x.chan@gmail.com    20Jan2021                - v2.7.17
-						-bfSolver version 2.7.15
-						-BsplineFourier version 2.7.14
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.17
+                        -bfSolver version 2.7.15
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.17
 Author: w.x.chan@gmail.com    25Jan2021                - v2.7.19
-						-bfSolver version 2.7.15
-						-BsplineFourier version 2.7.14
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.19
+                        -bfSolver version 2.7.15
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Author: w.x.chan@gmail.com    08Jul2021                - v2.7.20
-						-bfSolver version 2.7.20
-						-BsplineFourier version 2.7.14
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.19
+                        -bfSolver version 2.7.20
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Author: w.x.chan@gmail.com    15Jul2021                - v2.8.0
-						-bfSolver version 2.8.0
-						-BsplineFourier version 2.7.14
-						-motionCorrect version 2.7.8
-						-segment verion 2.7.19
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 
+Author: w.x.chan@gmail.com    21Jul2021                - v2.8.3   replace tab by space
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Requirements:
     autoD
     numpy
@@ -164,7 +169,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.2'
+_version='2.8.3'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -216,51 +221,51 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
 
     
     if startstep<=1 and endstep>=1:
-	imagedim=np.loadtxt(savePath+'/scale.txt')
+    imagedim=np.loadtxt(savePath+'/scale.txt')
         if pngFileFormat is None:
-	    if twoD:
-		pngFileFormat='time{0:03d}.png'
-		image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
-		image.dimlen['x']=imagedim[0]
-		image.dimlen['y']=imagedim[1]
-		image.dimlen['t']=1.
-		image.rearrangeDim(['t','y','x'])
-		image.save(savePath+'/img')
-	    else:
+        if twoD:
+        pngFileFormat='time{0:03d}.png'
+        image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
+        image.dimlen['x']=imagedim[0]
+        image.dimlen['y']=imagedim[1]
+        image.dimlen['t']=1.
+        image.rearrangeDim(['t','y','x'])
+        image.save(savePath+'/img')
+        else:
                 pngFileFormat='time{0:03d}/slice{{0:03d}}time{0:03d}.png'
                 image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t','z'],n=1)
-		image.dimlen['x']=imagedim[0]
-		image.dimlen['y']=imagedim[1]
-		image.dimlen['z']=imagedim[2]
-		image.dimlen['t']=1.
-		image.rearrangeDim(['t','z','y','x'])
-		image.save(savePath+'/img')
+        image.dimlen['x']=imagedim[0]
+        image.dimlen['y']=imagedim[1]
+        image.dimlen['z']=imagedim[2]
+        image.dimlen['t']=1.
+        image.rearrangeDim(['t','z','y','x'])
+        image.save(savePath+'/img')
         
     if startstep<=2 and endstep>=2:
         if maskImg:
-	    image=mip.load(savePath+'/img')
+        image=mip.load(savePath+'/img')
             maskImg=image.clone()
             mask=np.zeros(image.data.shape)
             mask[image.data==0]=1
             mask=np.prod(mask,axis=0)
-	    if twoD:
-		mask=np.tile(mask,(image.data.shape[0],1,1))
-	        border=np.ones(mask.shape[1:]).astype(bool)
-	        border[tuple([slice(1,-1)]*len(mask.shape[1:]))]=False
-	    else:
+        if twoD:
+        mask=np.tile(mask,(image.data.shape[0],1,1))
+            border=np.ones(mask.shape[1:]).astype(bool)
+            border[tuple([slice(1,-1)]*len(mask.shape[1:]))]=False
+        else:
                 mask=np.tile(mask,(image.data.shape[0],1,1,1))
-	        border=np.ones(mask.shape[2:]).astype(bool)
-	        border[tuple([slice(1,-1)]*len(mask.shape[2:]))]=False
+            border=np.ones(mask.shape[2:]).astype(bool)
+            border[tuple([slice(1,-1)]*len(mask.shape[2:]))]=False
             for t in range(image.data.shape[0]):
-		if twoD:
-		    ws=watershed(mask[t])
+        if twoD:
+            ws=watershed(mask[t])
                     for n in range(ws.max()):
                         if np.count_nonzero(ws==n)>0:
                             if mask[t][ws==n].mean()>=0.5 and not(np.any(border*ws==n)):
                                 mask[t][ws==n]=0
                     mask[t]=segment.detectNonregularBoundary(image.data[t].copy(),iterations=30,initArray=mask[t])
                     mask[t]=morphology.binary_erosion(mask[t],iterations=2,border_value=0)
-		else:
+        else:
                     for z in range(image.data.shape[1]):
                         ws=watershed(mask[t,z])
                         for n in range(ws.max()):
@@ -284,10 +289,10 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             else:
                 maskImg=mip.load(savePath+'/maskBorderImg').data.astype(float)
         startTime=time.process_time()
-	if twoD:
-	    setOrigin=(0.,0.)
-	else:
-	    setOrigin=(0.,0.,0.)
+    if twoD:
+        setOrigin=(0.,0.)
+    else:
+        setOrigin=(0.,0.,0.)
         if fftLagrangian:
             pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=False)
         else:
