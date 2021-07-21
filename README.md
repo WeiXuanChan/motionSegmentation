@@ -66,7 +66,7 @@ Number of Fourier terms, number of Fourier coefficients = Fourier terms*2+1
 ###### finalShape
 Set the final uniform bspline grid shape (NUMBER OF CONTROL POINTS IN x,NUMBER OF CONTROL POINTS IN y,NUMBER OF CONTROL POINTS IN z,NUMBER FOURIER COEFFICIENTS PER CONTROL POINT, NUMBER OF DIMENSIONS), if None, it will default to the shape in t0 -> t1 registration.
 
-##### twoD
+###### twoD
 set to True is the image set is in 2D
 
 ### References
