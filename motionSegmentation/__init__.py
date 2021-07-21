@@ -164,7 +164,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.1'
+_version='2.8.2'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -181,7 +181,7 @@ import medImgProc as mip
 import medImgProc.processFunc as pf
 import time
 
-def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,peroid=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False):
+def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False):
     '''
     step 1: load image
     step 2: create mask
