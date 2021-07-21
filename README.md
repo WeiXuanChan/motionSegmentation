@@ -7,14 +7,14 @@ pip install motionSegmentation
 
 ### Usage
 #### simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,peroid=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False)
-##### REQUIRED FILES
+###### REQUIRED FILES
 savePath+'/scale.txt': the length per pixel x, y, z of the image 
-##### OPTIONAL FILES
+###### OPTIONAL FILES
 savePath+'/diastole_systole.txt': diastole and systolic time frame
 savePath+'/transform/manual_t{0:d}to{1:d}_0.txt'.format(anchor[n][0],anchor[n][1]): additional bspline vectors to support the motion estimation
-##### savePath
+###### savePath
 set the folder path to be used where the generated and required files will be are.
-##### startstep, endstep
+###### startstep, endstep
 Set the start and end step for the simpleSolver.
 
 step 1: load image -- Image will be loaded as savePath+'/'+pngFileFormat.format(t,z)
@@ -31,42 +31,42 @@ step 6: regrid to time
 
 setp 7: compute compound
 
-##### fileScale
+###### fileScale
 set based on the scale of image dimension such that fileScale*AVERAGE_IMAGE_DIMENSION > 1
 
-##### getCompoundTimeList,
+###### getCompoundTimeList,
 set the timestep(s) for compounding in a list, if None, it will use diastolic and systolic timesteps in savePath+'/diastole_systole.txt', if file does not exist, it will be set as [0]
 
-##### compoundSchemeList
+###### compoundSchemeList
 set the compounding method(s) to use in a list, if None it will be set for all the supported compounding methods ['SAC','maximum','mean','wavelet'] 
 
-##### fftLagrangian
+###### fftLagrangian
 Set to False if you do not want to use time frame 0 as reference (t -> t+1 and 0 -> t will be registered), then t -> t+1 and t -> t-1 will be registered.
 
-##### pngFileFormat
+###### pngFileFormat
 set the string format to read and stacked multiple images, if None, defaults to 'time{0:03d}/slice{{0:03d}}time{0:03d}.png' for 3D and 'time{0:03d}.png' for 2D.
 
-##### period
+###### period
 Set the period of the motion in time frame (can be a float), if None, it will default as the len(DIMENSION t)
 
-##### maskImg
+###### maskImg
 if True, it will auto detect and mask borders with 0 intensity
 
-##### anchor
+###### anchor
 set as a List of pairs of time frame to include in the motion estimation in addition to the default: [[anchor_t_n1,anchor_t_m1],[anchor_t_n2,anchor_t_m2],...]
 
 It will find the bspline files in savePath+'/transform/manual_t{0:d}to{1:d}_0.txt'.format(anchor[n][0],anchor[n][1]) for each pair
 
-##### bgrid
+###### bgrid
 set the spacing of the uniform bspline grid use to represent the image registration in terms of pixels of the largest dimension
 
-##### fourierTerms
+###### fourierTerms
 Number of Fourier terms, number of Fourier coefficients = Fourier terms*2+1
 
-##### finalShape
+###### finalShape
 Set the final uniform bspline grid shape (NUMBER OF CONTROL POINTS IN x,NUMBER OF CONTROL POINTS IN y,NUMBER OF CONTROL POINTS IN z,NUMBER FOURIER COEFFICIENTS PER CONTROL POINT, NUMBER OF DIMENSIONS), if None, it will default to the shape in t0 -> t1 registration.
 
-#### twoD
+##### twoD
 set to True is the image set is in 2D
 
 ### References
