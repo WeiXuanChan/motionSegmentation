@@ -221,19 +221,19 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
 
     
     if startstep<=1 and endstep>=1:
-    imagedim=np.loadtxt(savePath+'/scale.txt')
+        imagedim=np.loadtxt(savePath+'/scale.txt')
         if pngFileFormat is None:
-        if twoD:
-        pngFileFormat='time{0:03d}.png'
-        image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
-        image.dimlen['x']=imagedim[0]
-        image.dimlen['y']=imagedim[1]
-        image.dimlen['t']=1.
-        image.rearrangeDim(['t','y','x'])
-        image.save(savePath+'/img')
+            if twoD:
+                pngFileFormat='time{0:03d}.png'
+                image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
+                image.dimlen['x']=imagedim[0]
+                image.dimlen['y']=imagedim[1]
+                image.dimlen['t']=1.
+                image.rearrangeDim(['t','y','x'])
+                image.save(savePath+'/img')
         else:
-                pngFileFormat='time{0:03d}/slice{{0:03d}}time{0:03d}.png'
-                image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t','z'],n=1)
+            pngFileFormat='time{0:03d}/slice{{0:03d}}time{0:03d}.png'
+            image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t','z'],n=1)
         image.dimlen['x']=imagedim[0]
         image.dimlen['y']=imagedim[1]
         image.dimlen['z']=imagedim[2]
@@ -243,29 +243,29 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
         
     if startstep<=2 and endstep>=2:
         if maskImg:
-        image=mip.load(savePath+'/img')
+            image=mip.load(savePath+'/img')
             maskImg=image.clone()
             mask=np.zeros(image.data.shape)
             mask[image.data==0]=1
             mask=np.prod(mask,axis=0)
-        if twoD:
-        mask=np.tile(mask,(image.data.shape[0],1,1))
-            border=np.ones(mask.shape[1:]).astype(bool)
-            border[tuple([slice(1,-1)]*len(mask.shape[1:]))]=False
-        else:
+            if twoD:
+                mask=np.tile(mask,(image.data.shape[0],1,1))
+                border=np.ones(mask.shape[1:]).astype(bool)
+                border[tuple([slice(1,-1)]*len(mask.shape[1:]))]=False
+            else:
                 mask=np.tile(mask,(image.data.shape[0],1,1,1))
-            border=np.ones(mask.shape[2:]).astype(bool)
-            border[tuple([slice(1,-1)]*len(mask.shape[2:]))]=False
+                border=np.ones(mask.shape[2:]).astype(bool)
+                border[tuple([slice(1,-1)]*len(mask.shape[2:]))]=False
             for t in range(image.data.shape[0]):
-        if twoD:
-            ws=watershed(mask[t])
+                if twoD:
+                    ws=watershed(mask[t])
                     for n in range(ws.max()):
                         if np.count_nonzero(ws==n)>0:
                             if mask[t][ws==n].mean()>=0.5 and not(np.any(border*ws==n)):
                                 mask[t][ws==n]=0
                     mask[t]=segment.detectNonregularBoundary(image.data[t].copy(),iterations=30,initArray=mask[t])
                     mask[t]=morphology.binary_erosion(mask[t],iterations=2,border_value=0)
-        else:
+                else:
                     for z in range(image.data.shape[1]):
                         ws=watershed(mask[t,z])
                         for n in range(ws.max()):
