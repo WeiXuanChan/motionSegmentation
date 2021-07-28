@@ -169,7 +169,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.4'
+_version='2.8.5'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -225,20 +225,21 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
         if pngFileFormat is None:
             if twoD:
                 pngFileFormat='time{0:03d}.png'
-                image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
-                image.dimlen['x']=imagedim[0]
-                image.dimlen['y']=imagedim[1]
-                image.dimlen['t']=1.
-                image.rearrangeDim(['t','y','x'])
-                image.save(savePath+'/img')
+            else:
+                pngFileFormat='time{0:03d}/slice{{0:03d}}time{0:03d}.png'
+        if twoD:
+            image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t'],n=1)
+            image.dimlen['x']=imagedim[0]
+            image.dimlen['y']=imagedim[1]
+            image.dimlen['t']=1.
+            image.rearrangeDim(['t','y','x'])
         else:
-            pngFileFormat='time{0:03d}/slice{{0:03d}}time{0:03d}.png'
             image=mip.loadStack(savePath+'/'+pngFileFormat,dimension=['t','z'],n=1)
-        image.dimlen['x']=imagedim[0]
-        image.dimlen['y']=imagedim[1]
-        image.dimlen['z']=imagedim[2]
-        image.dimlen['t']=1.
-        image.rearrangeDim(['t','z','y','x'])
+            image.dimlen['x']=imagedim[0]
+            image.dimlen['y']=imagedim[1]
+            image.dimlen['z']=imagedim[2]
+            image.dimlen['t']=1.
+            image.rearrangeDim(['t','z','y','x'])
         image.save(savePath+'/img')
         
     if startstep<=2 and endstep>=2:
