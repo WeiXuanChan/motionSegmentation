@@ -290,10 +290,10 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             else:
                 maskImg=mip.load(savePath+'/maskBorderImg').data.astype(float)
         startTime=time.process_time()
-    if twoD:
-        setOrigin=(0.,0.)
-    else:
-        setOrigin=(0.,0.,0.)
+        if twoD:
+            setOrigin=(0.,0.)
+        else:
+            setOrigin=(0.,0.,0.)
         if fftLagrangian:
             pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=False)
         else:
