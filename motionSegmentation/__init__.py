@@ -156,6 +156,12 @@ Author: w.x.chan@gmail.com    21Jul2021                - v2.8.3   replace tab by
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
+Author: w.x.chan@gmail.com    21Jul2021                - v2.8.6   
+                                -debug maskImg remained as False 
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Requirements:
     autoD
     numpy
@@ -169,7 +175,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.5'
+_version='2.8.6'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -289,6 +295,8 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
                 maskImg=mip.load(savePath+'/'+maskImg).data
             else:
                 maskImg=mip.load(savePath+'/maskBorderImg').data.astype(float)
+        else:
+            maskImg=None
         startTime=time.process_time()
         if twoD:
             setOrigin=(0.,0.)
