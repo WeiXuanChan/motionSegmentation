@@ -320,7 +320,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
                 if len(anchor[n])==4:
                     image1=mip.load(anchor[n][2])
                     image2=mip.load(anchor[n][3])
-                    pf.TmapRegister_img2img(image1,image2,savePath=savePath,fileName='manual_'+regfile_general[:-4].format(anchor[n][0],anchor[n][1]),scaleImg=fileScale)
+                    pf.TmapRegister_img2img(image1,image2,savePath=savePath,fileName='manual_'+regfile_general[:-4].format(anchor[n][0],anchor[n][1]),scaleImg=fileScale,rms=True,bgrid=bgrid,bweight=1.,twoD=twoD)
         regTime=time.process_time()-startTime
         allTime.append(regTime)
         allTimeHeader+="registrationTime,"
