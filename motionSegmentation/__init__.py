@@ -162,7 +162,7 @@ Author: w.x.chan@gmail.com    21Jul2021                - v2.8.6
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
-Author: w.x.chan@gmail.com    04Aug2021                - v2.8.7   
+Author: w.x.chan@gmail.com    04Aug2021                - v2.8.8   
                                 -added imgfmt to simpleSolver 
                                 - added automatic anchor
                         -bfSolver version 2.8.0
@@ -182,7 +182,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.7'
+_version='2.8.8'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
