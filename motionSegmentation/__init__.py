@@ -162,6 +162,12 @@ Author: w.x.chan@gmail.com    21Jul2021                - v2.8.6
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
+Author: w.x.chan@gmail.com    04Aug2021                - v2.8.7   
+                                -added imgfmt to simpleSolver 
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Requirements:
     autoD
     numpy
@@ -175,7 +181,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.6'
+_version='2.8.7'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -192,7 +198,7 @@ import medImgProc as mip
 import medImgProc.processFunc as pf
 import time
 
-def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False):
+def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False,imgfmt=None):
     '''
     step 1: load image
     step 2: create mask
@@ -246,6 +252,8 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             image.dimlen['z']=imagedim[2]
             image.dimlen['t']=1.
             image.rearrangeDim(['t','z','y','x'])
+        if imgfmt is not None:
+            image.data=image.data.astype(imgfmt)
         image.save(savePath+'/img')
         
     if startstep<=2 and endstep>=2:
