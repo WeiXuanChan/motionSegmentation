@@ -164,6 +164,7 @@ Author: w.x.chan@gmail.com    21Jul2021                - v2.8.6
                         -segment verion 2.7.19
 Author: w.x.chan@gmail.com    04Aug2021                - v2.8.7   
                                 -added imgfmt to simpleSolver 
+                                - added automatic anchor
                         -bfSolver version 2.8.0
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
@@ -314,6 +315,12 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=False)
         else:
             pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=True)
+        if anchor is not None:
+            for n in range(len(anchor)):
+                if len(anchor[n])==4:
+                    image1=mip.load(anchor[n][2])
+                    image2=mip.load(anchor[n][3])
+                    pf.TmapRegister_img2img(image1,image2,savePath=savePath,fileName='manual_'+regfile_general[:-4].format(anchor[n][0],anchor[n][1]),scaleImg=fileScale)
         regTime=time.process_time()-startTime
         allTime.append(regTime)
         allTimeHeader+="registrationTime,"
@@ -396,9 +403,11 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             solver.addBsplineFile(fileList,timeMapList=timeMapList,fileScale=fileScale)
         fft_bsFourier=BsplineFourier.BsplineFourier(savePath+'/'+saveName+'_fft.txt')
         for n in range(len(anchor)):
-            solver.addBsplineFile(imregPath+'manual_'+regfile_general.format(anchor[n][0],anchor[n][1]),timeMapList=[timeList[anchor[n][0]],timeList[anchor[n][1]]],weightList=10.,fileScale=fileScale)
-    
-        
+            if len(anchor[n])==3:
+                solver.addBsplineFile(anchor[n][2],timeMapList=[timeList[anchor[n][0]],timeList[anchor[n][1]]],weightList=10.,fileScale=fileScale)
+            else:
+                solver.addBsplineFile(imregPath+'manual_'+regfile_general.format(anchor[n][0],anchor[n][1]),timeMapList=[timeList[anchor[n][0]],timeList[anchor[n][1]]],weightList=10.,fileScale=fileScale)
+                
         solver.bsFourier=fft_bsFourier
         if type(finalShape)!=type(None):
             if np.any(np.array(finalShape)!=np.array(solver.bsFourier.coef.shape)):
