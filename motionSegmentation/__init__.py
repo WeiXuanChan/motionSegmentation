@@ -255,6 +255,8 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             image.rearrangeDim(['t','z','y','x'])
         if imgfmt is not None:
             image.data=image.data.astype(imgfmt)
+        if 'RGB' in image.dim:
+            image.changeGreyscaleFormat(colorFormat='RGB')
         image.save(savePath+'/img')
         
     if startstep<=2 and endstep>=2:
