@@ -169,6 +169,12 @@ Author: w.x.chan@gmail.com    04Aug2021                - v2.8.8
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
+Author: w.x.chan@gmail.com    17Sep2021                - v2.8.9   
+                                -added changeGreyscaleFormat in simpleSolver
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Requirements:
     autoD
     numpy
@@ -182,7 +188,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.8'
+_version='2.8.9'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
