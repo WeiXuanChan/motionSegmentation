@@ -367,6 +367,7 @@ class bfSolver:
             dX=self.bsplines[0].getVector(self.points[m],vec=[0,1])
             coef[1]=dX
             coef[2]=0
+            self.pointsCoef.append(coef.copy())
         return self.pointsCoef
   
     def solve_pointbypoint(self,tRef=None,maxError=0.00001,maxIteration=1000,convergence=0.8,reportevery=1000,tempSave=None,resume=False,movAvgError=False,lmLambda_init=0.001,lmLambda_incrRatio=5.,lmLambda_max=float('inf'),lmLambda_min=0.00001):
