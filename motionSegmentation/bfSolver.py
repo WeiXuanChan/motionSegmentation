@@ -362,10 +362,12 @@ class bfSolver:
         '''
         self.pointsCoef=[]
         for m in range(len(self.pointsCoef),len(self.points)):
+            X=getCoordfromCoef(np.array([*self.points[m],self.bsplines[0].timeMap[0]-self.bsFourier.origin[self.points.shape[-1]]]),coef,self.bsFourier.spacing)+self.points[m]
+            V=np.array(self.bsplines[0].getVector(X))
+            coscoef=V/(np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[1])-np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[0]))
             coef=self.bsFourier.getRefCoef(self.points[m])
             coef[0]=0
-            dX=self.bsplines[0].getVector(self.points[m],vec=[0,1])
-            coef[1]=dX
+            coef[1]=coscoef
             coef[2]=0
             self.pointsCoef.append(coef.copy())
         return self.pointsCoef
