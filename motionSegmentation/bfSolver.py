@@ -351,6 +351,8 @@ class bfSolver:
                 rmsweight=None
             else:
                 rmsweight=rmsBasedWeighted(rmsList)
+        elif method='pointbypoint_exact1':
+            sampleCoefList=self.solve_pointbypoint_exact1()
         self.bsFourier.regrid(self.points,sampleCoefList,weight=rmsweight,linearConstrainPoints=linearConstrainPoints,linearConstrainWeight=linearConstrainWeight)
         logger.info('BsplineFourier updated')
     def solve_pointbypoint_exact1(self):
@@ -382,7 +384,6 @@ class bfSolver:
             lmLambda_min: float
                 Minimum Lambda value for Levenberg-Marquardt algorithm
         '''
-        rmsList=[]
         self.pointsCoef=[]
         for m in range(len(self.pointsCoef),len(self.points)):
             coef=self.bsFourier.getRefCoef(self.points[m])
@@ -390,7 +391,7 @@ class bfSolver:
             dVdX=self.bsplines[0].getdX(pointX[n])
             coef[1]=dVdX
             coef[2]=0
-        return (self.pointsCoef,rmsList)
+        return self.pointsCoef
   
     def solve_pointbypoint(self,tRef=None,maxError=0.00001,maxIteration=1000,convergence=0.8,reportevery=1000,tempSave=None,resume=False,movAvgError=False,lmLambda_init=0.001,lmLambda_incrRatio=5.,lmLambda_max=float('inf'),lmLambda_min=0.00001):
         ''' 
