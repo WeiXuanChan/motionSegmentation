@@ -385,14 +385,10 @@ class bfSolver:
                 Minimum Lambda value for Levenberg-Marquardt algorithm
         '''
         self.pointsCoef=[]
-        pointX=[]
-        for n in range(len(self.bsplines)):
-            X=getCoordfromCoef(np.array([*self.points[m],self.bsplines[n].timeMap[0]-self.bsFourier.origin[self.points.shape[-1]]]),coef,self.bsFourier.spacing)+self.points[m]
-            pointX.append(X.copy())
         for m in range(len(self.pointsCoef),len(self.points)):
             coef=self.bsFourier.getRefCoef(self.points[m])
             coef[0]=0
-            dVdX=self.bsplines[0].getdX(pointX[n])
+            dVdX=self.bsplines[0].getdX(self.points[m])
             coef[1]=dVdX
             coef[2]=0
         return self.pointsCoef
