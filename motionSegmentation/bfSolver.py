@@ -353,6 +353,7 @@ class bfSolver:
                 rmsweight=rmsBasedWeighted(rmsList)
         elif method='pointbypoint_exact1':
             sampleCoefList=self.solve_pointbypoint_exact1()
+            rmsweight=None
         self.bsFourier.regrid(self.points,sampleCoefList,weight=rmsweight,linearConstrainPoints=linearConstrainPoints,linearConstrainWeight=linearConstrainWeight)
         logger.info('BsplineFourier updated')
     def solve_pointbypoint_exact1(self):
