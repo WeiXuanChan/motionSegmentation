@@ -358,14 +358,15 @@ class bfSolver:
         logger.info('BsplineFourier updated')
     def solve_pointbypoint_exact1(self):
         ''' 
-        Solves for the bsplineFourier with 1 cos coeficient only and bspline that goes from 0 to halftime
+        Solves for the bsplineFourier with 1 cos coeficient only and bspline that goes starts from 0
         '''
         self.pointsCoef=[]
         for m in range(len(self.pointsCoef),len(self.points)):
-            X=getCoordfromCoef(np.array([*self.points[m],self.bsplines[0].timeMap[0]-self.bsFourier.origin[self.points.shape[-1]]]),coef,self.bsFourier.spacing)+self.points[m]
-            V=np.array(self.bsplines[0].getVector(X))
-            coscoef=V/(np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[1])-np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[0]))
+            if self.bsplines[0].timeMap[0]!=0:
+                raise Exception("solver pointbypoint_exact1 is only avaliable for bspline maping from time 0.")
             coef=self.bsFourier.getRefCoef(self.points[m])
+            V=np.array(self.bsplines[0].getVector(self.points[m]))
+            coscoef=V/(np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[1])-np.cos(2.*np.pi/self.bsFourier.spacing[-1]*self.bsplines[0].timeMap[0]))
             coef[0]=0
             coef[1]=coscoef
             coef[2]=0
