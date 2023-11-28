@@ -353,6 +353,44 @@ class bfSolver:
                 rmsweight=rmsBasedWeighted(rmsList)
         self.bsFourier.regrid(self.points,sampleCoefList,weight=rmsweight,linearConstrainPoints=linearConstrainPoints,linearConstrainWeight=linearConstrainWeight)
         logger.info('BsplineFourier updated')
+    def solve_pointbypoint_exact1(self):
+        ''' 
+        Solves for the bsplineFourier
+        Parameters:
+            maxError: float
+                maximum change in coefficients of bsplinefourier to consider converged
+            maxIteration:int
+                maximum number of iterations
+            convergence:float
+                maximum ratio of change in coefficient to current coefficient
+            method:str, optional, defaults to pointbypoint
+                Period of resultant bsplineFourier (only used if spacing is undefined)
+            reportevery:int
+                print output to report (or save) progress every "reportevery" points solved
+            tempSave:str
+                file_path to save sampling results
+            resume:int
+                resume solving with results from tempSave
+            movAvgError: bool
+                determine whether to use moving average error instead of current error
+            lmLambda_init: float
+                initial Lambda value for Levenberg-Marquardt algorithm
+            lmLambda_incrRatio: float
+                Ratio to increase of decrease Lambda value for Levenberg-Marquardt algorithm
+            lmLambda_max: float
+                Maximum Lambda value for Levenberg-Marquardt algorithm
+            lmLambda_min: float
+                Minimum Lambda value for Levenberg-Marquardt algorithm
+        '''
+        rmsList=[]
+        self.pointsCoef=[]
+        for m in range(len(self.pointsCoef),len(self.points)):
+            coef=self.bsFourier.getRefCoef(self.points[m])
+            coef[0]=0
+            dVdX=self.bsplines[0].getdX(pointX[n])
+            coef[1]=dVdX
+            coef[2]=0
+        return (self.pointsCoef,rmsList)
   
     def solve_pointbypoint(self,tRef=None,maxError=0.00001,maxIteration=1000,convergence=0.8,reportevery=1000,tempSave=None,resume=False,movAvgError=False,lmLambda_init=0.001,lmLambda_incrRatio=5.,lmLambda_max=float('inf'),lmLambda_min=0.00001):
         ''' 
