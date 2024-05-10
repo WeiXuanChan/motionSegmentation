@@ -274,7 +274,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     if startstep<=2 and endstep>=2:
         if maskImg:
             image=mip.load(savePath+'/img')
-            maskImg=image.clone()
+            maskImage=image.clone()
             mask=np.zeros(image.data.shape)
             mask[image.data==0]=1
             mask=np.prod(mask,axis=0)
@@ -304,29 +304,28 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
                                     mask[t,z][ws==n]=0
                         mask[t,z]=segment.detectNonregularBoundary(image.data[t,z].copy(),iterations=30,initArray=mask[t,z])
                         mask[t,z]=morphology.binary_erosion(mask[t,z],iterations=2,border_value=0)
-            maskImg.data=mask
-            maskImg.save(savePath+'/maskBorderImg')
-    
-    
+            maskImage.data=mask
+            maskImage.save(savePath+'/maskBorderImg')
+  
     if startstep<=3 and endstep>=3:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
         if maskImg:
             if type(maskImg)==str:
-                maskImg=mip.load(savePath+'/'+maskImg).data
+                maskImage=mip.load(savePath+'/'+maskImg).data
             else:
-                maskImg=mip.load(savePath+'/maskBorderImg').data.astype(float)
+                maskImage=mip.load(savePath+'/maskBorderImg').data.astype(float)
         else:
-            maskImg=None
+            maskImage=None
         startTime=time.process_time()
         if twoD:
             setOrigin=(0.,0.)
         else:
             setOrigin=(0.,0.,0.)
         if fftLagrangian:
-            pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=False)
+            pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImage,twoD=twoD,cyclic=False)
         else:
-            pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImg,twoD=twoD,cyclic=True)
+            pf.TmapRegister(image,savePath=savePath,origin=setOrigin,bgrid=bgrid,bweight=1.,rms=True,startTime=0,scaleImg=fileScale,maskArray=maskImage,twoD=twoD,cyclic=True)
         if anchor is not None:
             for n in range(len(anchor)):
                 if len(anchor[n])==4:
@@ -340,50 +339,87 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     if startstep<=4 and endstep>=4:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
-        timeList=np.loadtxt(savePath+'/transform/timeList')
+        timeList=np.arange(timestepNo)
         timestep=timeList[1]
-        timeMapList=[]
-        fileList=[]
-        for n in range(timestepNo-1):
-            timeMapList.append([timeList[n],timeList[n+1]])
-            fileList.append(imregPath+regfile_general.format(n,n+1))
-        timeMapList.append([timeList[-1],timeList[0]])
-        fileList.append(imregPath+regfile_general.format(timestepNo-1,0))
-    
-        timeMapList.append([timeList[0],timeList[-1]])
-        fileList.append(imregPath+regfile_general.format(0,timestepNo-1))
-        for n in range(timestepNo-1,0,-1):
-            timeMapList.append([timeList[n],timeList[n-1]])
-            fileList.append(imregPath+regfile_general.format(n,n-1))
-    
-        timeMapList2=[]
-        fileList2=[]
-        for n in range(timestepNo):
-            if n!=0:
-                timeMapList2.append([0,timeList[n]])
-                fileList2.append(imregPath+regfile_general.format(0,n))
-        if period is None:
-            period=timestep*timestepNo
-        
-        solver=bfSolver.bfSolver()
-        startTime=time.process_time()###
-        if fftLagrangian:
-            solver.addBsplineFile(fileList2+fileList[:timestepNo-1],timeMapList=timeMapList2+timeMapList[:timestepNo-1],fileScale=fileScale)
-            solver.initialize(shape=finalShape,period=period,fourierTerms=fourierTerms,spacingDivision=2.)
-            solver.estimateInitialwithRefTime(timestepNo-1,OrderedBsplinesList2=range(timestepNo-1,2*(timestepNo-1)),spacingDivision=2.,gap=0)
+        if multiTimeRes>0:
+            if period is None:
+                period=timestepNo
+            os.makedirs(savePath+'/multiTimeRes',exist_ok=True)
+            image=image.data[::2]
+            image.dimlen['t']=image.dimlen['t']*2
+            image.save(savePath+'/multiTimeRes/img')
+            if maskImg:
+                if type(maskImg)==str:
+                    maskImage=mip.load(savePath+'/'+maskImg)
+                else:
+                    maskImage=mip.load(savePath+'/maskBorderImg')
+                maskImage=maskImage.data[::2]
+                maskImage.dimlen['t']=maskImage.dimlen['t']*2
+                if type(maskImg)==str:
+                    maskImage.save(savePath+'/multiTimeRes/'+maskImg)
+                else:
+                    maskImage_temp.save(savePath+'/multiTimeRes/maskBorderImg')
+            simpleSolver_dict={fileScale=fileScale,
+                              getCompoundTimeList=None,
+                              compoundSchemeList=None,
+                              fftLagrangian=fftLagrangian,
+                              pngFileFormat=None,
+                              period=period,
+                              maskImg=maskImg,
+                              anchor=None,
+                              bgrid=bgrid,
+                              finalShape=finalShape,
+                              fourierTerms=fourierTerms,
+                              twoD=twoD,
+                              imgfmt=imgfmt,
+                              multiTimeRes=multiTimeRes-1}
+            simpleSolver(savePath+'/multiTimeRes',startstep=3,endstep=5,**simpleSolver_dict)
+            bsFourier=BsplineFourier.BsplineFourier(savePath+'/multiTimeRes/'+saveName+'_f'+str(fourierTerms)+'.txt')
+            bsFourier.writeCoef(savePath+'/'+saveName+'_fft.txt')
+            del bsFourier
         else:
-            solver.addBsplineFile(fileList,timeMapList=timeMapList,fileScale=fileScale)
-            solver.initialize(shape=finalShape,period=period,fourierTerms=fourierTerms,spacingDivision=2.)
-            solver.estimateInitialwithRefTime(timestepNo-1,OrderedBsplinesList2=range(timestepNo,len(fileList)-1),spacingDivision=2.,gap=0,forwardbackward=True)
-        mtinitTime=time.process_time()-startTime
-        solver.bsFourier.writeCoef(savePath+'/'+saveName+'_fft.txt')
-        allTime.append(mtinitTime)
-        allTimeHeader+="motiontrackinginitTime,"
+            timeMapList=[]
+            fileList=[]
+            for n in range(timestepNo-1):
+                timeMapList.append([timeList[n],timeList[n+1]])
+                fileList.append(imregPath+regfile_general.format(n,n+1))
+            timeMapList.append([timeList[-1],timeList[0]])
+            fileList.append(imregPath+regfile_general.format(timestepNo-1,0))
+    
+            timeMapList.append([timeList[0],timeList[-1]])
+            fileList.append(imregPath+regfile_general.format(0,timestepNo-1))
+            for n in range(timestepNo-1,0,-1):
+                timeMapList.append([timeList[n],timeList[n-1]])
+                fileList.append(imregPath+regfile_general.format(n,n-1))
+    
+            timeMapList2=[]
+            fileList2=[]
+            for n in range(timestepNo):
+                if n!=0:
+                    timeMapList2.append([0,timeList[n]])
+                    fileList2.append(imregPath+regfile_general.format(0,n))
+            if period is None:
+                period=timestep*timestepNo
+        
+            solver=bfSolver.bfSolver()
+            startTime=time.process_time()###
+            if fftLagrangian:
+                solver.addBsplineFile(fileList2+fileList[:timestepNo-1],timeMapList=timeMapList2+timeMapList[:timestepNo-1],fileScale=fileScale)
+                solver.initialize(shape=finalShape,period=period,fourierTerms=fourierTerms,spacingDivision=2.)
+                solver.estimateInitialwithRefTime(timestepNo-1,OrderedBsplinesList2=range(timestepNo-1,2*(timestepNo-1)),spacingDivision=2.,gap=0)
+            else:
+                solver.addBsplineFile(fileList,timeMapList=timeMapList,fileScale=fileScale)
+                solver.initialize(shape=finalShape,period=period,fourierTerms=fourierTerms,spacingDivision=2.)
+                solver.estimateInitialwithRefTime(timestepNo-1,OrderedBsplinesList2=range(timestepNo,len(fileList)-1),spacingDivision=2.,gap=0,forwardbackward=True)
+            mtinitTime=time.process_time()-startTime
+            solver.bsFourier.writeCoef(savePath+'/'+saveName+'_fft.txt')
+            allTime.append(mtinitTime)
+            allTimeHeader+="motiontrackinginitTime,"
     
     if startstep<=5 and endstep>=5:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
-        timeList=np.loadtxt(savePath+'/transform/timeList')
+        timeList=np.arange(timestepNo)
         timestep=timeList[1]
         timeMapList=[]
         fileList=[]
@@ -474,8 +510,8 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
         image.data=image.data.astype(float)
         timestepNo=image.data.shape[0]
         if maskImg:
-            maskImg=mip.load(savePath+'/maskBorderImg')
-            maskImg.data=maskImg.data.astype(float)
+            maskImage=mip.load(savePath+'/maskBorderImg')
+            maskImage.data=maskImage.data.astype(float)
         
         syncTime=[]
         syncMaskTime=[]
@@ -489,7 +525,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
             
             syncImg=image.clone()
             if maskImg:
-                syncMask=maskImg.clone()
+                syncMask=maskImage.clone()
             syncMaskTime.append([])
             syncTime.append([])
             for t2 in range(image.data.shape[0]):
@@ -499,7 +535,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
                     syncTime[-1].append(time.process_time()-startTime)###
                     if maskImg:
                         startTime=time.process_time()###
-                        syncMask.data[t2]=pf.transform_img2img(maskImg.data[t2].copy(),savePath+r'/bsfTransform/t'+str(t)+'to'+str(t2)+'.txt',savePath=savePath+'/'+str(t),scale=np.array([maskImg.dimlen['x'],maskImg.dimlen['y'],maskImg.dimlen['z']]))
+                        syncMask.data[t2]=pf.transform_img2img(maskImage.data[t2].copy(),savePath+r'/bsfTransform/t'+str(t)+'to'+str(t2)+'.txt',savePath=savePath+'/'+str(t),scale=np.array([maskImage.dimlen['x'],maskImage.dimlen['y'],maskImage.dimlen['z']]))
                         syncMaskTime[-1].append(time.process_time()-startTime)###
             syncTime[-1]=np.sum(syncTime[-1])
             syncMaskTime[-1]=np.sum(syncMaskTime[-1])
