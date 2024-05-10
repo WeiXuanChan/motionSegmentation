@@ -175,6 +175,12 @@ Author: w.x.chan@gmail.com    17Sep2021                - v2.8.9
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
+Author: w.x.chan@gmail.com    13May2024                - v2.9.0   
+                                -added multiresolution level for time (multiTimeRes)
+                        -bfSolver version 2.8.0
+                        -BsplineFourier version 2.7.14
+                        -motionCorrect version 2.7.8
+                        -segment verion 2.7.19
 Requirements:
     autoD
     numpy
@@ -188,7 +194,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.8.9'
+_version='2.9.0'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
@@ -205,7 +211,7 @@ import medImgProc as mip
 import medImgProc.processFunc as pf
 import time
 
-def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False,imgfmt=None):
+def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False,imgfmt=None,multiTimeRes=0):
     '''
     step 1: load image
     step 2: create mask
@@ -218,8 +224,8 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     logging.info(savePath)
     allTime=[]
     allTimeHeader=""
-    imregPath=savePath+'/transform/'
     regfile_general='t{0:d}to{1:d}_0.txt'
+    imregPath=savePath+'/transform/'
     saveName='RMSmotion_smooth'
     if anchor is None:
         anchor=[]
@@ -305,8 +311,6 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     if startstep<=3 and endstep>=3:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
-        timeList=np.arange(timestepNo)
-        timestep=timeList[1]
         if maskImg:
             if type(maskImg)==str:
                 maskImg=mip.load(savePath+'/'+maskImg).data
@@ -336,7 +340,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     if startstep<=4 and endstep>=4:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
-        timeList=np.arange(timestepNo)
+        timeList=np.loadtxt(savePath+'/transform/timeList')
         timestep=timeList[1]
         timeMapList=[]
         fileList=[]
@@ -379,7 +383,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
     if startstep<=5 and endstep>=5:
         image=mip.load(savePath+'/img')
         timestepNo=image.data.shape[0]
-        timeList=np.arange(timestepNo)
+        timeList=np.loadtxt(savePath+'/transform/timeList')
         timestep=timeList[1]
         timeMapList=[]
         fileList=[]
