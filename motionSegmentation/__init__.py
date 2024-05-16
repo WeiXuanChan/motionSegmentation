@@ -210,6 +210,10 @@ from skimage.segmentation import watershed
 import medImgProc as mip
 import medImgProc.processFunc as pf
 import time
+try:
+    import trimesh
+except:
+    pass
 
 def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeList=None,compoundSchemeList=None,fftLagrangian=True,pngFileFormat=None,period=None,maskImg=True,anchor=None,bgrid=4.,finalShape=None,fourierTerms=4,twoD=False,imgfmt=None,multiTimeRes=0):
     '''
@@ -358,21 +362,21 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
                 if type(maskImg)==str:
                     maskImage.save(savePath+'/multiTimeRes/'+maskImg)
                 else:
-                    maskImage_temp.save(savePath+'/multiTimeRes/maskBorderImg')
-            simpleSolver_dict={fileScale=fileScale,
-                              getCompoundTimeList=None,
-                              compoundSchemeList=None,
-                              fftLagrangian=fftLagrangian,
-                              pngFileFormat=None,
-                              period=period,
-                              maskImg=maskImg,
-                              anchor=None,
-                              bgrid=bgrid,
-                              finalShape=finalShape,
-                              fourierTerms=fourierTerms,
-                              twoD=twoD,
-                              imgfmt=imgfmt,
-                              multiTimeRes=multiTimeRes-1}
+                    maskImage.save(savePath+'/multiTimeRes/maskBorderImg')
+            simpleSolver_dict={'fileScale':fileScale,
+                              'getCompoundTimeList':None,
+                              'compoundSchemeList':None,
+                              'fftLagrangian':fftLagrangian,
+                              'pngFileFormat':None,
+                              'period':period,
+                              'maskImg':maskImg,
+                              'anchor':None,
+                              'bgrid':bgrid,
+                              'finalShape':finalShape,
+                              'fourierTerms':fourierTerms,
+                              'twoD':twoD,
+                              'imgfmt':imgfmt,
+                              'multiTimeRes':multiTimeRes-1}
             simpleSolver(savePath+'/multiTimeRes',startstep=3,endstep=5,**simpleSolver_dict)
             bsFourier=BsplineFourier.BsplineFourier(savePath+'/multiTimeRes/'+saveName+'_f'+str(fourierTerms)+'.txt')
             bsFourier.writeCoef(savePath+'/'+saveName+'_fft.txt')
@@ -588,4 +592,19 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
         allTime=np.array([np.mean(syncTime),np.mean(syncMaskTime),np.mean(SACTime),np.mean(SACTime)+np.mean(SACmaxTime),np.mean(SACTime)+np.mean(SACmeanTime),np.mean(maxTime),np.mean(meanTime),np.mean(waveletTime)])
         allTime=allTime/np.prod(image.data.shape[1:])*(10.**6.)
         np.savetxt(savePath+'/computationalTime.txt',allTime.reshape((1,-1)),header='syncTime,syncMaskTime,SACTime,SACmaxTime,SACmeanTime,maxTime,meanTime,waveletTime\n'+' microsecond per pixel ,image shape = '+repr(image.data.shape))
-    
+
+def get_stls(savePath,bsf_file,file_scale,stl_file,getTimeList=None):
+    mesh=trimesh.load_mesh(stl_file) 
+    os.makedirs(savePath,exist_ok=True)
+    #solver=bfSolver.bfSolver()
+    #solver.loadSamplingResults(os.path.join(casePath,training_folder,bsf_file[:-4]+'_samplingResults.txt'))
+    bsf=BsplineFourier(bsf_file)#.regridToTime(solver.points,solver.pointsCoef,stl_time)
+    stl0_coords=np.array(mesh.vertices)[:,0:3]
+    if getTimeList is None:
+        getTimeList=range(int(bsf.spacing[-1]))
+    for n in getTimeList:
+        new_coords=stl0_coords+bsf.getVector(np.concatenate((stl0_coords,stl0_coords[...,0:1]*0.+n),axis=-1))
+        mesh.vertices[:]=new_coords[:]
+        mesh.export(os.path.join(savePath,'t'+str(n)+'.stl'))
+        
+        
