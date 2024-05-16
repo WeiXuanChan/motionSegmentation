@@ -593,7 +593,7 @@ def simpleSolver(savePath,startstep=1,endstep=7,fileScale=None,getCompoundTimeLi
         allTime=allTime/np.prod(image.data.shape[1:])*(10.**6.)
         np.savetxt(savePath+'/computationalTime.txt',allTime.reshape((1,-1)),header='syncTime,syncMaskTime,SACTime,SACmaxTime,SACmeanTime,maxTime,meanTime,waveletTime\n'+' microsecond per pixel ,image shape = '+repr(image.data.shape))
 
-def get_stls(savePath,bsf_file,file_scale,stl_file,getTimeList=None):
+def get_stls(savePath,bsf_file,stl_file,getTimeList=None):
     mesh=trimesh.load_mesh(stl_file) 
     os.makedirs(savePath,exist_ok=True)
     #solver=bfSolver.bfSolver()
