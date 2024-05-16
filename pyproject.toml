@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "motionSegmentation"
-version = "2.9.0"
+version = "2.9.1"
 description = "Explicit spatio-temporal regularization of motion tracking."
 readme = "README.md"
 authors = [{ name = "Wei Xuan Chan", email = "w.x.chan1986@gmail.com" }]
