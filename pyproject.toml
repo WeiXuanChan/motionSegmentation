@@ -1,0 +1,33 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motionSegmentation"
+version = "2.9.0"
+description = "Explicit spatio-temporal regularization of motion tracking."
+readme = "README.md"
+authors = [{ name = "Wei Xuan Chan", email = "w.x.chan1986@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ['explicit', 'motion', 'regularization']
+dependencies = ['numpy','autoD','scipy','trimesh','medImgProc','nfft']
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+dev = ["modulus"]
+
+[project.urls]
+Homepage = "https://github.com/WeiXuanChan/ModulusVascularFlow"
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["*"]  # package names should match these glob patterns (["*"] by default)
+exclude = []  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
