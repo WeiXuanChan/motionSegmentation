@@ -175,7 +175,7 @@ Author: w.x.chan@gmail.com    17Sep2021                - v2.8.9
                         -BsplineFourier version 2.7.14
                         -motionCorrect version 2.7.8
                         -segment verion 2.7.19
-Author: w.x.chan@gmail.com    13May2024                - v2.9.0   
+Author: w.x.chan@gmail.com    16May2024                - v2.9.1   
                                 -added multiresolution level for time (multiTimeRes)
                         -bfSolver version 2.8.0
                         -BsplineFourier version 2.7.14
@@ -194,7 +194,7 @@ Known Bug:
     HSV color format not supported
 All rights reserved.
 '''
-_version='2.9.0'
+_version='2.9.1'
 import logging
 logger = logging.getLogger('motionSegmentation v'+_version)
 logger.info('motionSegmentation version '+_version)
