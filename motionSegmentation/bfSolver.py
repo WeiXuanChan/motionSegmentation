@@ -29,6 +29,8 @@ History:
                                                              -added fmt for pointTrace
   Author: w.x.chan@gmail.com         15Jul2021           - v2.8.0
                                                              -added trimesh.repair.fix_normals for pointTrace 
+  Author: w.x.chan@gmail.com         21May2021           - v2.9.2
+                                                             -fixed pointbypoint_exact1 solving 
 
 Requirements:
     BsplineFourier
@@ -40,7 +42,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.8.0'
+_version='2.9.2'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -351,7 +353,7 @@ class bfSolver:
                 rmsweight=None
             else:
                 rmsweight=rmsBasedWeighted(rmsList)
-        elif method='pointbypoint_exact1':
+        elif method=='pointbypoint_exact1':
             sampleCoefList=self.solve_pointbypoint_exact1()
             rmsweight=None
         self.bsFourier.regrid(self.points,sampleCoefList,weight=rmsweight,linearConstrainPoints=linearConstrainPoints,linearConstrainWeight=linearConstrainWeight)
