@@ -39,6 +39,8 @@ Author: w.x.chan@gmail.com         21FEB2020           - v2.7.12
                                                              -add regrid to Bspline
 Author: w.x.chan@gmail.com         07NOV2020           - v2.7.13
                                                              -debug undefine nFourierRange in Bspline.regrid
+Author: w.x.chan@gmail.com         07NOV2020           - v2.7.14
+                                                             -use of starred expression to cater for python 3.9
 Requirements:
     autoD
     numpy
@@ -50,7 +52,7 @@ Known Bug:
     None
 All rights reserved.
 '''
-_version='2.7.13'
+_version='2.7.14'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -2401,7 +2403,7 @@ class imageVectorAD(ad.AD):
                 continue
             bspread,imgslice=bspread
             if len(coef.shape)>self.twoD:
-                resultImage[tuple(imgslice)]+=bspread.reshape((*bspread.shape,*np.ones(len(coef[tuple(gridIndex[n])].shape),dtype=int)))*coef[tuple(gridIndex[n])].reshape((*np.ones(len(bspread.shape),dtype=int)),*coef[tuple(gridIndex[n])].shape)
+                resultImage[tuple(imgslice)]+=bspread.reshape(tuple(bspread.shape)+tuple(np.ones(len(coef[tuple(gridIndex[n])].shape),dtype=int)))*coef[tuple(gridIndex[n])].reshape(tuple(np.ones(len(bspread.shape),dtype=int))+tuple(coef[tuple(gridIndex[n])].shape))
             else:
                 resultImage[tuple(imgslice)]+=bspread*coef[tuple(gridIndex[n])]
         x['storedImage'][self.name+self.variableIdentifier+'d'+dkey]=resultImage.copy()
